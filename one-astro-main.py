@@ -45,7 +45,7 @@ rows = run_query(query)
 df = pd.DataFrame(rows)
 
 # Show DataFrame
-st.write(df)
+# st.write(df)
 
 # Button to download data as CSV
 @st.cache_data
