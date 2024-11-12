@@ -60,7 +60,7 @@ def extract_json(raw_df, json_column):
             continue
     json_df = pd.json_normalize(json_data)
     combined_df = pd.concat([raw_df, json_df], axis=1)
-    return combined_df
+    return combined_df  # Move this line outside the loop
 
     # Step 3: Process Events to Calculate Unique Users
     class UniqueUsersProcessor:
