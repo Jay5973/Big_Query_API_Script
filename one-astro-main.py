@@ -43,7 +43,7 @@ AND event_name IN ('chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_s
 rows = run_query(query)
 
 # Convert query results to DataFrame
-raw_file = pd.DataFrame(rows)
+raw_file = pd.read_csv(row)
 astro_file = pd.read_csv("https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true")
 
 if not raw_file.empty:
