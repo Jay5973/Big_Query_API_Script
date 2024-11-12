@@ -3,6 +3,8 @@ import pandas as pd
 from google.oauth2 import service_account
 from google.cloud import bigquery
 import datetime
+import json
+
 
 # Streamlit App Setup
 st.title("Astrology Chat Data Processor")
