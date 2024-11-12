@@ -26,11 +26,12 @@ client = bigquery.Client(credentials=credentials)
 def run_query(query):
     query_job = client.query(query)
     timeout_ms=600000,
+    return query_job
     # retry=retry_policy,
-    rows_raw = query_job.result()
-    # Convert to list of dicts. Required for st.cache_data to hash the return value.
-    rows = [dict(row) for row in rows_raw]
-    return rows
+    # rows_raw = query_job.result()
+    # # Convert to list of dicts. Required for st.cache_data to hash the return value.
+    # rows = [dict(row) for row in rows_raw]
+    # return rows
 
 query = """
 SELECT * FROM `oneastro---stage.custom_event_tracking.events`
