@@ -34,7 +34,7 @@ start_date_str = start_date.strftime('%Y-%m-%d') + ' 18:30:00'
 end_date_str = end_date.strftime('%Y-%m-%d') + ' 18:30:00'
 
 query = f"""
-SELECT * FROM `oneastro---stage.custom_event_tracking.events`
+SELECT * FROM `oneastro-prod.custom_event_tracking.events`
 WHERE (app_id = 'com.oneastro' OR app_id = 'com.oneastrologer')
 AND event_time >= DATETIME('{start_date_str}')
 AND event_time < DATETIME('{end_date_str}')
@@ -101,7 +101,7 @@ class UniqueUsersProcessor:
     def process_chat_accepted_events(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_intake_submit']
         valid_user_ids = intake_events['user_id'].unique()
-        accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['paid'] == 0) & (self.raw_df['clientId'].isin(valid_user_ids))]
+        accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['paid'] == 'false') & (self.raw_df['clientId'].isin(valid_user_ids))]
         accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         accept_events['date'] = accept_events['event_time'].dt.date
         accept_events['hour'] = accept_events['event_time'].dt.hour
