@@ -25,13 +25,8 @@ client = bigquery.Client(credentials=credentials)
 @st.cache_data(ttl=600)
 def run_query(query):
     query_job = client.query(query)
-    timeout_ms=600000,
-    return query_job
-    # retry=retry_policy,
-    # rows_raw = query_job.result()
-    # # Convert to list of dicts. Required for st.cache_data to hash the return value.
-    # rows = [dict(row) for row in rows_raw]
-    # return rows
+    result = query_job.result()
+    return result.to_dataframe()
 
 query = """
 SELECT * FROM `oneastro---stage.custom_event_tracking.events`
@@ -44,7 +39,7 @@ AND event_name IN ('chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_s
 rows = run_query(query)
 
 # Convert query results to DataFrame
-raw_file = rows.to_dataframe()
+raw_file = rows
 astro_file = pd.read_csv("https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true")
 
 if not raw_file.empty:
