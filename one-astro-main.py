@@ -56,6 +56,10 @@ json_df = pd.json_normalize(json_data)
 combined_df = pd.concat([df, json_df], axis=1)
 combined_df
 
+# Display final output
+st.write("### Final Processed Data")
+st.dataframe(merged_data)
+
 astro_file = pd.read_csv("https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true")
 
 
@@ -252,9 +256,7 @@ final_overall = pd.merge(final_overall, users_live, on=['date', 'hour'], how='ou
 merged_data = processor.merge_with_astro_data(final_results)
 merged_overall = final_overall
 
-# Display final output
-st.write("### Final Processed Data")
-st.dataframe(merged_data)
+
 
 import plotly.express as px
 
