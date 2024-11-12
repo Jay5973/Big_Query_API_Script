@@ -13,12 +13,12 @@ credentials = service_account.Credentials.from_service_account_info(
 )
 client = bigquery.Client(credentials=credentials)
 
-retry_policy = Retry(
-    initial=1.0,  # Start with 1 second
-    maximum=10.0,  # Maximum retry delay
-    multiplier=2.0,  # Exponential backoff multiplier
-    deadline=30.0,  # Retry for up to 30 seconds
-), 
+# retry_policy = Retry(
+#     initial=1.0,  # Start with 1 second
+#     maximum=10.0,  # Maximum retry delay
+#     multiplier=2.0,  # Exponential backoff multiplier
+#     deadline=30.0,  # Retry for up to 30 seconds
+# ), 
 
 # Perform query.
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
@@ -26,7 +26,7 @@ retry_policy = Retry(
 def run_query(query):
     query_job = client.query(query)
     timeout_ms=600000,
-    retry=retry_policy,
+    # retry=retry_policy,
     rows_raw = query_job.result()
     # Convert to list of dicts. Required for st.cache_data to hash the return value.
     rows = [dict(row) for row in rows_raw]
