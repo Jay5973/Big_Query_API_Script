@@ -18,6 +18,7 @@ client = bigquery.Client(credentials=credentials)
 @st.cache_data(ttl=600)
 def run_query(query):
     query_job = client.query(query)
+    timeout_ms=600000,
     rows_raw = query_job.result()
     # Convert to list of dicts. Required for st.cache_data to hash the return value.
     rows = [dict(row) for row in rows_raw]
