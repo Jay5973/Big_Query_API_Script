@@ -1,1 +1,2 @@
 plotly
+google-cloud-bigquery==1.28.0
