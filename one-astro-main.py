@@ -18,7 +18,7 @@ retry_policy = Retry(
     maximum=10.0,  # Maximum retry delay
     multiplier=2.0,  # Exponential backoff multiplier
     deadline=30.0,  # Retry for up to 30 seconds
-)retry=retry_policy, 
+), 
 
 # Perform query.
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
