@@ -54,7 +54,7 @@ def convert_df_to_csv(df):
 
 csv = convert_df_to_csv(df)
 
-raw_file = df
+# raw_file = df
 astro_file = pd.read_csv("https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true")
 
 # Step 2: Extract JSON Data from raw_data.csv and Save to a DataFrame
@@ -227,12 +227,10 @@ def extract_json(raw_df, json_column):
             user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
             return user_counts
 
-    # Read CSV files
-    raw_df = raw_file
     astro_df = pd.read_csv('https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true')
 
     # Step 4: Process Data
-    raw_df = extract_json(raw_df, 'other_data')
+    raw_df = extract_json(df, 'other_data')
     processor = UniqueUsersProcessor(raw_df, astro_df)
     
     # Process each event type
