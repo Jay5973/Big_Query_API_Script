@@ -6,10 +6,34 @@ import plotly.express as px
 # Streamlit App Setup
 st.title("Astrology Chat Data Processor")
 
+# streamlit_app.py
+
+import streamlit as st
+from google.oauth2 import service_account
+from google.cloud import bigquery
+
+# Create API client.
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+)
+client = bigquery.Client(credentials=credentials)
+
+# Perform query.
+# Uses st.cache_data to only rerun when the query changes or after 10 min.
+@st.cache_data(ttl=600)
+def run_query(query):
+    query_job = client.query(query)
+    rows_raw = query_job.result()
+    # Convert to list of dicts. Required for st.cache_data to hash the return value.
+    rows = [dict(row) for row in rows_raw]
+    return rows
+
+rows = run_query("select * from `oneastro---stage.custom_event_tracking.events` where (app_id = "com.oneastro" or app_id = "com.oneastrologer") and event_time >= DATETIME("2024-11-10 18:30:00") and event_time < DATETIME("2024-11-11 18:30:00") and event_name in ("chat_intake_submit", "accept_chat", "open_page", "chat_msg_send", "confirm_cancel_waiting_list")")
+
 
 
 # Step 1: Upload Files
-raw_file = st.file_uploader("Upload raw_data.csv", type="csv")
+raw_file = pd.DataFrame(rows)
 astro_file = pd.read_csv("https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true")
 
 if raw_file:
