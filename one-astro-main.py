@@ -3,6 +3,7 @@ import pandas as pd
 from google.oauth2 import service_account
 from google.cloud import bigquery
 import datetime
+import io
 
 # Streamlit App Setup
 st.title("Astrology Chat Data Processor")
@@ -24,8 +25,8 @@ def run_query(query):
 
 # User inputs for date range
 st.sidebar.header("Query Parameters")
-start_date = st.sidebar.date_input("Start date", datetime.date(2024, 11, 10))
-end_date = st.sidebar.date_input("End date", datetime.date(2024, 11, 11))
+start_date = st.sidebar.date_input("Start date", datetime.date.today())
+end_date = st.sidebar.date_input("End date", datetime.date.today())
 
 # Format dates to string for BigQuery
 start_date_str = start_date.strftime('%Y-%m-%d') + ' 18:30:00'
@@ -47,15 +48,12 @@ df = pd.DataFrame(rows)
 # Show DataFrame
 st.write(df)
 
-# Button to download data as CSV
-@st.cache_data
-def convert_df_to_csv(df):
-    return df.to_csv(index=False).encode('utf-8')
+# Convert DataFrame to CSV string and then read it back into a DataFrame
+csv_buffer = io.StringIO()
+df.to_csv(csv_buffer, index=False)
+csv_buffer.seek(0)  # Move to the start of the StringIO buffer
 
-csv = convert_df_to_csv(df)
-
-
-raw_file = pd.read_csv(csv)
+raw_file = pd.read_csv(csv_buffer)
 astro_file = pd.read_csv("https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true")
 
 if not raw_file.empty:
