@@ -37,6 +37,7 @@ AND event_name IN ('chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_s
 """
 
 rows = run_query(query)
+print(rows)
 
 # Convert query results to DataFrame
 raw_file = rows
