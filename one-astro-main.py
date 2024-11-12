@@ -56,6 +56,8 @@ json_df = pd.json_normalize(json_data)
 combined_df = pd.concat([df, json_df], axis=1)
 combined_df
 
+astro_file = pd.read_csv("https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true")
+
 
     # Step 3: Process Events to Calculate Unique Users
 class UniqueUsersProcessor:
