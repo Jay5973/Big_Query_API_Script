@@ -332,7 +332,7 @@ merged_overall = final_overall
 last_row1 = final_overall.tail(1)
 
 # Convert all numerical values to integers
-last_row1 = last_row.applymap(lambda x: int(x) if isinstance(x, (int, float)) else x)
+last_row1 = last_row1.applymap(lambda x: int(x) if isinstance(x, (int, float)) else x)
 
 # Transpose the DataFrame
 last_row = last_row1.transpose()
