@@ -42,7 +42,7 @@ SELECT user_id, device_id, other_data, event_time, event_name, app_id FROM `onea
 WHERE (app_id = 'com.oneastro' OR app_id = 'com.oneastrologer')
 AND event_time >= DATETIME('{start_date_str}')
 AND event_time < DATETIME('{end_date_str}')
-AND event_name IN ('app_install', 'profile_creation','chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_send', 'confirm_cancel_waiting_list', 'razorpay_continue_success')
+AND event_name IN ('chat_call_accept','app_install', 'profile_creation','chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_send', 'confirm_cancel_waiting_list', 'razorpay_continue_success')
 """
 
 rows = run_query(query)
@@ -228,7 +228,7 @@ class UniqueUsersProcessor:
         # accept_counts = accept_events.groupby(['date', 'hour'])['clientId'].nunique().reset_index()
         # accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
         # return accept_counts
-        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_call_accept']
+        accept_events = self.raw_df[self.raw_df['event_name'] == 'chat_call_accept']
         accept_counts = accept_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
         accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
         return accept_counts
