@@ -10,23 +10,33 @@ import time
 # Streamlit App Setup
 st.title("Astrology Chat Data Processor")
 
-CACHE_REFRESH_INTERVAL = 30
-
-# Track the last refresh time
-if 'last_refresh' not in st.session_state:
-    st.session_state.last_refresh = time.time()  # Initialize with the current time
-
-# Check if time has passed since last refresh
-current_time = time.time()
-time_diff = current_time - st.session_state.last_refresh
-
-# If more than the specified interval has passed, trigger a rerun
+# CACHE_REFRESH_INTERVAL = 30
 import streamlit as st
-from streamlit_js_eval import streamlit_js_eval
+import time
 
-if st.button("Reload page"):
-    st.session_state.last_refresh = current_time 
-    streamlit_js_eval(js_expressions="parent.window.location.reload()")
+# Button to trigger rerun
+if st.button('Rerun App'):
+    # Triggering a rerun
+    st.experimental_rerun()
+
+# Example code that would change every time you rerun
+st.write(f"Current time: {time.ctime()}")
+
+# # Track the last refresh time
+# if 'last_refresh' not in st.session_state:
+#     st.session_state.last_refresh = time.time()  # Initialize with the current time
+
+# # Check if time has passed since last refresh
+# current_time = time.time()
+# time_diff = current_time - st.session_state.last_refresh
+
+# # If more than the specified interval has passed, trigger a rerun
+# import streamlit as st
+# from streamlit_js_eval import streamlit_js_eval
+
+# if st.button("Reload page"):
+#     st.session_state.last_refresh = current_time 
+#     streamlit_js_eval(js_expressions="parent.window.location.reload()")
 
 
 # Create API client.
@@ -36,7 +46,7 @@ credentials = service_account.Credentials.from_service_account_info(
 client = bigquery.Client(credentials=credentials)
 
 # Perform query. Uses st.cache_data to only rerun when the query changes or after 10 min.
-@st.cache_data(ttl=30, show_spinner=True)
+@st.cache_data(ttl=600, show_spinner=True)
 def run_query(query):
     query_job = client.query(query)
     rows_raw = query_job.result()
