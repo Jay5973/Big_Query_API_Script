@@ -18,8 +18,7 @@ if "value" not in st.session_state:
 # Display the current value stored in session state
 st.header(st.session_state.value)
 
-# Automatically rerun the app every 30 seconds
-st.time.sleep(30)  # Wait for 30 seconds
+time.sleep(30)  # Wait for 30 seconds
 
 # Optionally, update session state value here if needed
 st.session_state.value = "Updated Title"  # Example of updating the session state
