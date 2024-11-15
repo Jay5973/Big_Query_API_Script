@@ -16,7 +16,7 @@ credentials = service_account.Credentials.from_service_account_info(
 client = bigquery.Client(credentials=credentials)
 
 # Perform query. Uses st.cache_data to only rerun when the query changes or after 10 min.
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=30)
 def run_query(query):
     query_job = client.query(query)
     rows_raw = query_job.result()
@@ -329,8 +329,13 @@ final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hou
 merged_data = processor.merge_with_astro_data(final_results)
 merged_overall = final_overall
 
-last_row = merged_overall.tail(1)
+last_row1 = final_overall.tail(1)
 
+# Convert all numerical values to integers
+last_row1 = last_row.applymap(lambda x: int(x) if isinstance(x, (int, float)) else x)
+
+# Transpose the DataFrame
+last_row = last_row1.transpose()
 # Display the last row in Streamlit
 st.write("Live Data")
 st.table(last_row)
