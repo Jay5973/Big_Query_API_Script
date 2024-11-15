@@ -536,55 +536,55 @@ merged_data = processor.merge_with_astro_data(final_results)
 merged_overall = final_overall
 
 
-import streamlit as st
-import pandas as pd
-import numpy as np
+# import streamlit as st
+# import pandas as pd
+# import numpy as np
 
-# Assuming final_overall is your DataFrame
-# Get the last row of the DataFrame
-import pandas as pd
-import streamlit as st
-from datetime import datetime, timedelta
+# # Assuming final_overall is your DataFrame
+# # Get the last row of the DataFrame
+# import pandas as pd
+# import streamlit as st
+# from datetime import datetime, timedelta
 
-# Assuming `final_overall` is already defined
+# # Assuming `final_overall` is already defined
 
-# Get the last 4 rows
-last_rows = final_overall.tail(4)
+# # Get the last 4 rows
+# last_rows = final_overall.tail(4)
 
-# Drop the columns for date, hour, and interval
-# columns_to_drop = ['date', 'hour', 'interval']  # Adjust these column names based on your DataFrame
-# last_rows = last_rows.drop(columns=columns_to_drop)
+# # Drop the columns for date, hour, and interval
+# # columns_to_drop = ['date', 'hour', 'interval']  # Adjust these column names based on your DataFrame
+# # last_rows = last_rows.drop(columns=columns_to_drop)
 
-# Convert all numerical values to integers, ensuring that date and datetime fields are preserved
-def convert_to_int(value):
-    if pd.notnull(value) and isinstance(value, (int, float)):
-        return int(value)
-    return value
+# # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
+# def convert_to_int(value):
+#     if pd.notnull(value) and isinstance(value, (int, float)):
+#         return int(value)
+#     return value
 
-# Apply the conversion function to each column (without transpose)
-last_rows = last_rows.apply(lambda col: col.map(convert_to_int))
+# # Apply the conversion function to each column (without transpose)
+# last_rows = last_rows.apply(lambda col: col.map(convert_to_int))
 
-# Define time range labels
-now = datetime.now()
-time_ranges = [
-    f"{(now - timedelta(hours=1, minutes=0)).strftime('%H:%M')} - {(now - timedelta(minutes=45)).strftime('%H:%M')}",
-    f"{(now - timedelta(minutes=45)).strftime('%H:%M')} - {(now - timedelta(minutes=30)).strftime('%H:%M')}",
-    f"{(now - timedelta(minutes=30)).strftime('%H:%M')} - {(now - timedelta(minutes=15)).strftime('%H:%M')}",
-    f"{(now - timedelta(minutes=15)).strftime('%H:%M')} - {now.strftime('%H:%M')}"
-]
+# # Define time range labels
+# now = datetime.now()
+# time_ranges = [
+#     f"{(now - timedelta(hours=1, minutes=0)).strftime('%H:%M')} - {(now - timedelta(minutes=45)).strftime('%H:%M')}",
+#     f"{(now - timedelta(minutes=45)).strftime('%H:%M')} - {(now - timedelta(minutes=30)).strftime('%H:%M')}",
+#     f"{(now - timedelta(minutes=30)).strftime('%H:%M')} - {(now - timedelta(minutes=15)).strftime('%H:%M')}",
+#     f"{(now - timedelta(minutes=15)).strftime('%H:%M')} - {now.strftime('%H:%M')}"
+# ]
 
-# Replace the index with the time range labels
-last_rows.index = time_ranges
+# # Replace the index with the time range labels
+# last_rows.index = time_ranges
 
-# Convert the last 4 rows to text format
-last_rows_text = last_rows.astype(str)
+# # Convert the last 4 rows to text format
+# last_rows_text = last_rows.astype(str)
 
-# Transpose the rows to display them vertically
-last_rows_transposed = last_rows_text.T
+# # Transpose the rows to display them vertically
+# last_rows_transposed = last_rows_text.T
 
-# Display the last 4 rows in Streamlit (as rows, not transposed)
-st.write("Live Data")
-st.table(last_rows_transposed)
+# # Display the last 4 rows in Streamlit (as rows, not transposed)
+# st.write("Live Data")
+# st.table(last_rows_transposed)
 
 
 
@@ -601,6 +601,28 @@ st.dataframe(merged_overall)
 
 st.write('### Live Data')
 st.dataframe(fifteen_overall)
+
+last_rows = fifteen_overall.tail(4)
+
+# Convert all numerical values to integers, ensuring that date and datetime fields are preserved
+def convert_to_int(value):
+    if pd.notnull(value) and isinstance(value, (int, float)):
+        return int(value)
+    return value
+
+# Apply the conversion function to each column (without transpose)
+last_rows = last_rows.apply(lambda col: col.map(convert_to_int))
+
+# Convert the last 4 rows to text format
+last_rows_text = last_rows.astype(str)
+
+# Transpose the rows to display them vertically
+last_rows_transposed = last_rows_text.T
+
+# Display the last 4 rows in Streamlit (as rows, not transposed)
+st.write("Live Data")
+st.table(last_rows_transposed)
+
 
 import plotly.express as px
 
