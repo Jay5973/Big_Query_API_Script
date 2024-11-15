@@ -298,6 +298,9 @@ class UniqueUsersProcessor:
         return user_counts
 
 
+
+
+
     
     def astros_live(self):
         intake_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat')]
@@ -316,6 +319,139 @@ class UniqueUsersProcessor:
         user_counts = intake_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
         user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
+    
+    def get_15_minute_interval(hour, minute):
+        """
+        Given an hour and minute, return the corresponding 15-minute interval.
+        """
+        if 0 <= minute < 15:
+            return f"{hour}:00-15"
+        elif 15 <= minute < 30:
+            return f"{hour}:15-30"
+        elif 30 <= minute < 45:
+            return f"{hour}:30-45"
+        else:
+            return f"{hour}:45-60"
+    
+    # Update the methods to group by 15-minute intervals
+    
+    def process_overall_chat_completed_events_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_msg_send']
+        valid_user_ids = intake_events['chatSessionId'].unique()
+        accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['chatSessionId'].isin(valid_user_ids))]
+        accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        accept_events['interval'] = accept_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        accept_counts = accept_events.groupby(['date','hour', 'interval'])['clientId'].nunique().reset_index()
+        accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
+        return accept_counts
+    
+    def process_overall_chat_accepted_events_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_intake_submit']
+        valid_user_ids = intake_events['user_id'].unique()
+        accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['paid'] == 0) & (self.raw_df['clientId'].isin(valid_user_ids))]
+        accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        accept_events['interval'] = accept_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        accept_counts = accept_events.groupby(['date','hour', 'interval'])['clientId'].nunique().reset_index()
+        accept_counts.rename(columns={'clientId': 'chat_accepted_overall'}, inplace=True)
+        return accept_counts
+    
+    def process_overall_chat_intake_requests_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_intake_submit']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'chat_intake_overall'}, inplace=True)
+        return user_counts
+    
+    def process_overall_profile_creation_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'profile_creation']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'profile_creation'}, inplace=True)
+        return user_counts
+    
+    def process_overall_app_install_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'app_install']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['device_id'].nunique().reset_index()
+        user_counts.rename(columns={'device_id': 'app_installs'}, inplace=True)
+        return user_counts
+    
+    def process_overall_wallet_recharge_users_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'razorpay_continue_success']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'wallet_recharge_users'}, inplace=True)
+        return user_counts
+    
+    def process_overall_wallet_recharge_count_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'razorpay_continue_success']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['orderId'].nunique().reset_index()
+        user_counts.rename(columns={'orderId': 'wallet_recharge_count'}, inplace=True)
+        return user_counts
+    
+    def process_overall_wallet_recharge_amount_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'razorpay_continue_success']
+        intake_events = intake_events.drop_duplicates(subset='orderId')
+        intake_events['amount'] = pd.to_numeric(intake_events['amount'], errors='coerce')
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['amount'].sum().reset_index()
+        user_counts.rename(columns={'amount': 'wallet_recharge_amount'}, inplace=True)
+        return user_counts
+    
+    def astros_live_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'accept_chat']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'astros_live'}, inplace=True)
+        return user_counts
+    
+    def users_live_15(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
+        intake_events = intake_events[(self.raw_df['app_id'] == 'com.oneastro')]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Create a new column for 15-minute intervals
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
+        return user_counts
+
 
 astro_df = pd.read_csv('https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true')
 
@@ -360,6 +496,18 @@ final_overall = pd.merge(final_overall, wallet_recharge_users, on=['date', 'hour
 final_overall = pd.merge(final_overall, wallet_recharge_count, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, accept_time, on = ['date','hour'],how = 'outer')
+
+fifteen_overall = overall_chat_intakes_15
+fifteen_overall = pd.merge(fifteen_overall, overall_chat_accepts_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, overall_chat_completed_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, astro_live_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, users_live_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, app_installs_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, profile_creation_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_users_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_count_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_amount_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, accept_time_15, on = ['date', 'hour','interval'],how = 'outer')
 
 # Merge with astro data and display final data
 merged_data = processor.merge_with_astro_data(final_results)
@@ -410,6 +558,9 @@ st.dataframe(merged_data)
 
 st.write('### Overall-Hour Wise Data')
 st.dataframe(merged_overall)
+
+st.write('### Live Data')
+st.dataframe(fifteen_overall)
 
 import plotly.express as px
 
