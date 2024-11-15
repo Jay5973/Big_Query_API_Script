@@ -648,22 +648,6 @@ merged_overall = final_overall
 # st.write("Live Data")
 # st.table(last_rows_transposed)
 
-
-
-
-
-
-
-# Display final output
-st.write("### Astro-Hour Wise Data Data")
-st.dataframe(merged_data)
-
-st.write('### Overall-Hour Wise Data')
-st.dataframe(merged_overall)
-
-st.write('### Live Data')
-st.dataframe(fifteen_overall)
-
 import pandas as pd
 import streamlit as st
 
@@ -695,8 +679,36 @@ last_rows_transposed = last_rows_text.T
 st.write("Live Data")
 st.table(last_rows_transposed)
 
+st.write('### Overall-Hour Wise Data')
+st.dataframe(merged_overall)
+
+# Display final output
+st.write("### Astro-Hour Wise Data Data")
+st.dataframe(merged_data)
+
 
 import plotly.express as px
+
+fig4 = px.line(merged_overall, x='hour', y=['app_installs','profile_creation','chat_intake_overall', 'chat_accepted_overall', 'chat_completed_overall', 'astros_live', 'users_live', 'wallet_recharge_count'], 
+                title="Overall Metrics",
+                labels={
+                    'app_installs' : 'App Installs',
+                    'profile_creation' : 'Profile Creations',
+                    'chat_intake_overall': 'Chat Intakes',
+                    'chat_accepted_overall': 'Chat Accepts',
+                    'chat_completed_overall': 'Chat Completes',
+                    'astros_live': 'Astrologers Live',
+                    'users_live': 'Users Live',
+                    'wallet_recharge_amount' : 'Wallet Recharge Total in INR'
+                })
+fig4.update_layout(xaxis_title="Hour", yaxis_title="Count")
+fig4.update_traces(connectgaps=False)
+st.plotly_chart(fig4)
+
+# st.write('### Live Data')
+# st.dataframe(fifteen_overall)
+
+
 
 # Plot the graph for Chat Intake Requests - Hour-wise and Astrologer-wise
 fig1 = px.line(merged_data, x='hour', y='chat_intake_requests', color='name', line_group='name', title="Chat Intake Requests Hour-wise Astrologer-wise")
@@ -719,26 +731,11 @@ st.plotly_chart(fig3)
 print(merged_overall.columns)
 
 # Plot the graph for Overall Metrics
-fig4 = px.line(merged_overall, x='hour', y=['app_installs','profile_creation','chat_intake_overall', 'chat_accepted_overall', 'chat_completed_overall', 'astros_live', 'users_live', 'wallet_recharge_count'], 
-                title="Overall Metrics",
-                labels={
-                    'app_installs' : 'App Installs',
-                    'profile_creation' : 'Profile Creations',
-                    'chat_intake_overall': 'Chat Intakes',
-                    'chat_accepted_overall': 'Chat Accepts',
-                    'chat_completed_overall': 'Chat Completes',
-                    'astros_live': 'Astrologers Live',
-                    'users_live': 'Users Live',
-                    'wallet_recharge_amount' : 'Wallet Recharge Total in INR'
-                })
-fig4.update_layout(xaxis_title="Hour", yaxis_title="Count")
-fig4.update_traces(connectgaps=False)
-st.plotly_chart(fig4)
 
 
 # Option to download final data
 csv = merged_data.to_csv(index=False)
 st.download_button("Download Final Data as CSV", data=csv, file_name="combined_data_final_hour_wise.csv", mime="text/csv")
 
-time.sleep(600)
+time.sleep(900)
 st.rerun()
