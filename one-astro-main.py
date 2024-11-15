@@ -41,7 +41,7 @@ SELECT user_id, device_id, other_data, event_time, event_name FROM `oneastro-pro
 WHERE (app_id = 'com.oneastro' OR app_id = 'com.oneastrologer')
 AND event_time >= DATETIME('{start_date_str}')
 AND event_time < DATETIME('{end_date_str}')
-AND event_name IN ('app_install', 'profile_creation','chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_send', 'confirm_cancel_waiting_list')
+AND event_name IN ('app_install', 'profile_creation','chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_send', 'confirm_cancel_waiting_list', 'razorpay_continue_success')
 """
 
 rows = run_query(query)
@@ -219,6 +219,46 @@ class UniqueUsersProcessor:
         user_counts.rename(columns={'device_id': 'app_installs'}, inplace=True)
         return user_counts
 
+    def process_overall_wallet_recharge_users(self):
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'razorpay_continue_success')]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        user_counts = intake_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'wallet_recharge_users'}, inplace=True)
+        return user_counts
+
+    def process_overall_wallet_recharge_count(self):
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'razorpay_continue_success')]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        user_counts = intake_events.groupby(['date', 'hour'])['orderId'].nunique().reset_index()
+        user_counts.rename(columns={'orderId': 'wallet_recharge_count'}, inplace=True)
+        return user_counts
+
+    def process_overall_wallet_recharge_amount(self):
+        # Filter for the relevant events
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'razorpay_continue_success']
+        
+        # Remove duplicate records based on the same orderId
+        intake_events = intake_events.drop_duplicates(subset='orderId')
+        
+        # Convert event_time to datetime and adjust the timezone
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Extract date and hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        
+        # Group by date and hour and calculate the sum of amount
+        user_counts = intake_events.groupby(['date', 'hour'])['amount'].sum().reset_index()
+        
+        # Rename the column to wallet_recharge_amount
+        user_counts.rename(columns={'amount': 'wallet_recharge_amount'}, inplace=True)
+        
+        return user_counts
+
 
     
     def astros_live(self):
@@ -258,6 +298,9 @@ astro_live = processor.astros_live()
 users_live = processor.users_live()
 profile_creation = processor.process_overall_profile_creation()
 app_installs = processor.process_overall_app_install()
+wallet_recharge_users = processor.process_overall_wallet_recharge_users()
+wallet_recharge_count = processor.process_overall_wallet_recharge_count()
+wallet_recharge_amount = processor.process_overall_wallet_recharge_amount()
 
 # Combine results
 final_results = intake_data
@@ -274,6 +317,9 @@ final_overall = pd.merge(final_overall, astro_live, on=['date', 'hour'], how='ou
 final_overall = pd.merge(final_overall, users_live, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, app_installs, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, profile_creation, on=['date', 'hour'], how='outer')
+final_overall = pd.merge(final_overall, wallet_recharge_users, on=['date', 'hour'], how='outer')
+final_overall = pd.merge(final_overall, wallet_recharge_count, on=['date', 'hour'], how='outer')
+final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hour'], how='outer')
 
 # Merge with astro data and display final data
 merged_data = processor.merge_with_astro_data(final_results)
@@ -309,7 +355,7 @@ st.plotly_chart(fig3)
 print(merged_overall.columns)
 
 # Plot the graph for Overall Metrics
-fig4 = px.line(merged_overall, x='hour', y=['app_installs','profile_creation','chat_intake_overall', 'chat_accepted_overall', 'chat_completed_overall', 'astros_live', 'users_live'], 
+fig4 = px.line(merged_overall, x='hour', y=['app_installs','profile_creation','chat_intake_overall', 'chat_accepted_overall', 'chat_completed_overall', 'astros_live', 'users_live', 'wallet_recharge_count'], 
                 title="Overall Metrics",
                 labels={
                     'app_installs' : 'App Installs',
@@ -318,7 +364,8 @@ fig4 = px.line(merged_overall, x='hour', y=['app_installs','profile_creation','c
                     'chat_accepted_overall': 'Chat Accepts',
                     'chat_completed_overall': 'Chat Completes',
                     'astros_live': 'Astrologers Live',
-                    'users_live': 'Users Live'
+                    'users_live': 'Users Live',
+                    'wallet_recharge_amount' : 'Wallet Recharge Total in INR'
                 })
 fig4.update_layout(xaxis_title="Hour", yaxis_title="Count")
 fig4.update_traces(connectgaps=False)
