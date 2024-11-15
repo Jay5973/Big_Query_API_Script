@@ -23,7 +23,7 @@ time_diff = current_time - st.session_state.last_refresh
 # If more than the specified interval has passed, trigger a rerun
 if time_diff > CACHE_REFRESH_INTERVAL:
     st.session_state.last_refresh = current_time  # Update last refresh time
-    st.experimental_rerun()
+    st.rerun()
 
 
 # Create API client.
