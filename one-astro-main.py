@@ -99,8 +99,42 @@ class UniqueUsersProcessor:
         merged_events = pd.merge(intake_events, cancel_events, on=['user_id', 'astrologerId'], suffixes=('_intake', '_cancel'))
         merged_events['time_diff'] = (merged_events['event_time_cancel'] - merged_events['event_time_intake']).dt.total_seconds() / 60.0
         avg_time_diff = merged_events.groupby(['astrologerId', 'date_intake', 'hour_intake'])['time_diff'].mean().reset_index()
-        avg_time_diff.rename(columns={'astrologerId': '_id', 'date_intake': 'date', 'hour_intake': 'hour', 'time_diff': 'avg_time_diff_minutes'}, inplace=True)
+        avg_time_diff.rename(columns={'astrologerId': '_id', 'date_intake': 'date', 'hour_intake': 'hour', 'time_diff': 'cancellation_time'}, inplace=True)
         return avg_time_diff
+
+    def overall_accept_time(self):
+        # Filter chat_intake_submit events
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_intake_submit')].copy()
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+    
+        # Filter accept_chat events
+        cancel_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat')].copy()
+        cancel_events['event_time'] = pd.to_datetime(cancel_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        cancel_events['date'] = cancel_events['event_time'].dt.date
+        cancel_events['hour'] = cancel_events['event_time'].dt.hour
+    
+        # Merge the intake and cancel events based only on waitingListId
+        merged_events = pd.merge(
+            intake_events, 
+            cancel_events, 
+            on='waitingListId',  # Merge only on waitingListId
+            suffixes=('_intake', '_cancel')
+        )
+    
+        # Calculate time difference between intake and cancellation
+        merged_events['time_diff'] = (merged_events['event_time_cancel'] - merged_events['event_time_intake']).dt.total_seconds() / 60.0
+    
+        # Group by date and hour of the intake event, and calculate average time difference
+        avg_time_diff = merged_events.groupby(['date_intake', 'hour_intake'])['time_diff'].mean().reset_index()
+    
+        # Rename columns for clarity
+        avg_time_diff.rename(columns={'date_intake': 'date', 'hour_intake': 'hour', 'time_diff': 'accept_time'}, inplace=True)
+    
+        return avg_time_diff
+
+    
 
     def process_chat_accepted_events(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_intake_submit']
@@ -264,7 +298,6 @@ class UniqueUsersProcessor:
         return user_counts
 
 
-
     
     def astros_live(self):
         intake_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat')]
@@ -276,7 +309,7 @@ class UniqueUsersProcessor:
         return user_counts
 
     def users_live(self):
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'open_page')]
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'open_page') & (self.raw_df['app_id'] == 'com.oneastro')]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
@@ -306,6 +339,7 @@ app_installs = processor.process_overall_app_install()
 wallet_recharge_users = processor.process_overall_wallet_recharge_users()
 wallet_recharge_count = processor.process_overall_wallet_recharge_count()
 wallet_recharge_amount = processor.process_overall_wallet_recharge_amount()
+accept_time = processor.overall_accept_time()
 
 # Combine results
 final_results = intake_data
@@ -325,6 +359,7 @@ final_overall = pd.merge(final_overall, profile_creation, on=['date', 'hour'], h
 final_overall = pd.merge(final_overall, wallet_recharge_users, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, wallet_recharge_count, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hour'], how='outer')
+final_overall = pd.merge(final_overall, accept_time, on = ['date','hour'],how = 'outer')
 
 # Merge with astro data and display final data
 merged_data = processor.merge_with_astro_data(final_results)
