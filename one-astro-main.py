@@ -686,8 +686,24 @@ last_rows_transposed = last_rows_text.T
 st.write("Live Data")
 st.table(last_rows_transposed)
 
+merged_data_overall = merged_overall
+
+# Apply the conversion function to each column
+merged_data_overall = merged_data_overall.applymap(convert_to_int)
+
+# Drop the 'hour' and 'date' columns
+# columns_to_drop = ['hour', 'date']
+# last_rows = last_rows.drop(columns=columns_to_drop, errors='ignore')
+
+# Convert the last 4 rows to text format
+merged_overall_text = merged_data_overall.astype(str)
+
+# Transpose the rows to display them vertically
+merged_overall_transpose = merged_overall_text.T
+
+
 st.write('### Overall-Hour Wise Data')
-st.dataframe(merged_overall)
+st.dataframe(merged_overall_transpose)
 
 # Display final output
 st.write("### Astro-Hour Wise Data Data")
