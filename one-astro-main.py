@@ -316,12 +316,21 @@ class UniqueUsersProcessor:
 
     
     def astros_live(self):
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat')]
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'open_page') & (self.raw_df['app_id'] == 'com.oneastrologer')]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
         user_counts = intake_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
         user_counts.rename(columns={'user_id': 'astros_live'}, inplace=True)
+        return user_counts
+
+    def astros_busy(self):
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == 'com.oneastrologer')]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        user_counts = intake_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'astros_busy'}, inplace=True)
         return user_counts
 
     def users_live(self):
@@ -546,6 +555,7 @@ wallet_recharge_count_15 = processor.process_overall_wallet_recharge_count_15()
 wallet_recharge_amount_15 = processor.process_overall_wallet_recharge_amount_15()
 astros_busy_15 = processor.astros_busy_15()
 accept_time_15 = processor.overall_accept_time_15()
+astros_busy = processor.astros_busy()
 # accept_time_15 = processor.overall_accept_time()
 
 # Combine results
@@ -556,17 +566,19 @@ final_results = pd.merge(final_results, paid_completed_data, on=['_id', 'date', 
 final_results = pd.merge(final_results, cancelled, on=['_id', 'date', 'hour'], how='outer')
 final_results = pd.merge(final_results, cancel_time, on=['_id', 'date', 'hour'], how='outer')
 
-final_overall = overall_chat_intakes
-final_overall = pd.merge(final_overall, overall_chat_accepts, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, overall_chat_completed, on=['date', 'hour'], how='outer')
+final_overall = users_live
 final_overall = pd.merge(final_overall, astro_live, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, users_live, on=['date', 'hour'], how='outer')
+final_overall = pd.merge(final_overall, astros_busy, on = ['date','hour'],how = 'outer')
 final_overall = pd.merge(final_overall, app_installs, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, profile_creation, on=['date', 'hour'], how='outer')
+final_overall = pd.merge(final_overall, overall_chat_intakes, on=['date', 'hour'], how='outer')
+final_overall = pd.merge(final_overall, overall_chat_accepts, on=['date', 'hour'], how='outer')
+final_overall = pd.merge(final_overall, overall_chat_completed, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, wallet_recharge_users, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, wallet_recharge_count, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, accept_time, on = ['date','hour'],how = 'outer')
+
 
 fifteen_overall = users_live_15
 fifteen_overall = pd.merge(fifteen_overall, astro_live_15, on=['date', 'hour', 'interval'], how='outer')
