@@ -11,16 +11,21 @@ import time
 st.title("Astrology Chat Data Processor")
 
 # CACHE_REFRESH_INTERVAL = 30
-import streamlit as st
-import time
+# Initialize session state if not present
+if "value" not in st.session_state:
+    st.session_state.value = "Title"
 
-# Button to trigger rerun
-if st.button('Rerun App'):
-    ctx = st.script_run_context()
-    ctx.rerun()
+# Display the current value stored in session state
+st.header(st.session_state.value)
 
-# Example code that would change every time you rerun
-st.write(f"Current time: {time.ctime()}")
+# Automatically rerun the app every 30 seconds
+st.time.sleep(30)  # Wait for 30 seconds
+
+# Optionally, update session state value here if needed
+st.session_state.value = "Updated Title"  # Example of updating the session state
+
+# Trigger a rerun after the delay
+st.rerun()
 
 # # Track the last refresh time
 # if 'last_refresh' not in st.session_state:
