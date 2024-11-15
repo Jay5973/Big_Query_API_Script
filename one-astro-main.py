@@ -519,15 +519,15 @@ final_overall = pd.merge(final_overall, wallet_recharge_count, on=['date', 'hour
 final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hour'], how='outer')
 final_overall = pd.merge(final_overall, accept_time, on = ['date','hour'],how = 'outer')
 
-fifteen_overall = overall_chat_intakes_15
-fifteen_overall = pd.merge(fifteen_overall, overall_chat_accepts_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, overall_chat_completed_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = users_live_15
 fifteen_overall = pd.merge(fifteen_overall, astro_live_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, users_live_15, on=['date', 'hour', 'interval'], how='outer')
 fifteen_overall = pd.merge(fifteen_overall, app_installs_15, on=['date', 'hour', 'interval'], how='outer')
 fifteen_overall = pd.merge(fifteen_overall, profile_creation_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_users_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, overall_chat_intakes_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, overall_chat_accepts_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, overall_chat_completed_15, on=['date', 'hour', 'interval'], how='outer')
 fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_count_15, on=['date', 'hour', 'interval'], how='outer')
+fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_users_15, on=['date', 'hour', 'interval'], how='outer')
 fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_amount_15, on=['date', 'hour', 'interval'], how='outer')
 # fifteen_overall = pd.merge(fifteen_overall, accept_time_15, on = ['date', 'hour','interval'],how = 'outer')
 
