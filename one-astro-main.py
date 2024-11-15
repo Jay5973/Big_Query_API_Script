@@ -10,39 +10,6 @@ import time
 # Streamlit App Setup
 st.title("Astrology Chat Data Processor")
 
-# CACHE_REFRESH_INTERVAL = 30
-# Initialize session state if not present
-if "value" not in st.session_state:
-    st.session_state.value = "Title"
-
-# Display the current value stored in session state
-st.header(st.session_state.value)
-
-time.sleep(30)  # Wait for 30 seconds
-
-# Optionally, update session state value here if needed
-st.session_state.value = "Updated Title"  # Example of updating the session state
-
-# Trigger a rerun after the delay
-st.rerun()
-
-# # Track the last refresh time
-# if 'last_refresh' not in st.session_state:
-#     st.session_state.last_refresh = time.time()  # Initialize with the current time
-
-# # Check if time has passed since last refresh
-# current_time = time.time()
-# time_diff = current_time - st.session_state.last_refresh
-
-# # If more than the specified interval has passed, trigger a rerun
-# import streamlit as st
-# from streamlit_js_eval import streamlit_js_eval
-
-# if st.button("Reload page"):
-#     st.session_state.last_refresh = current_time 
-#     streamlit_js_eval(js_expressions="parent.window.location.reload()")
-
-
 # Create API client.
 credentials = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"]
