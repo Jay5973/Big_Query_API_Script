@@ -228,12 +228,13 @@ class UniqueUsersProcessor:
         # accept_counts = accept_events.groupby(['date', 'hour'])['clientId'].nunique().reset_index()
         # accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
         # return accept_counts
-        accept_events = self.raw_df[self.raw_df['event_name'] == 'chat_call_accept']
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
-        accept_counts = accept_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
-        accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
-        return accept_counts
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_call_accept')]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        user_counts = intake_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'chat_completed_overall'}, inplace=True)
+        return user_counts
     
     def process_overall_chat_accepted_events(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_intake_submit']
