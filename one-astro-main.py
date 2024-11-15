@@ -552,8 +552,8 @@ from datetime import datetime, timedelta
 last_rows = final_overall.tail(4)
 
 # Drop the columns for date, hour, and interval
-columns_to_drop = ['date', 'hour', 'interval']  # Adjust these column names based on your DataFrame
-last_rows = last_rows.drop(columns=columns_to_drop)
+# columns_to_drop = ['date', 'hour', 'interval']  # Adjust these column names based on your DataFrame
+# last_rows = last_rows.drop(columns=columns_to_drop)
 
 # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
 def convert_to_int(value):
