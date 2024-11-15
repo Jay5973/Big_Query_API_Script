@@ -25,9 +25,12 @@ def run_query(query):
     return rows
 
 # User inputs for date range
+today = datetime.date.today()
+yesterday = today - datetime.timedelta(days=1)
+
 st.sidebar.header("Query Parameters")
-start_date = st.sidebar.date_input("Start date", datetime.date(2024, 11, 10))
-end_date = st.sidebar.date_input("End date", datetime.date(2024, 11, 11))
+start_date = st.sidebar.date_input("Start date", yesterday)
+end_date = st.sidebar.date_input("End date", today)
 
 # Format dates to string for BigQuery
 start_date_str = start_date.strftime('%Y-%m-%d') + ' 18:30:00'
@@ -306,7 +309,7 @@ st.plotly_chart(fig3)
 print(merged_overall.columns)
 
 # Plot the graph for Overall Metrics
-fig4 = px.line(merged_overall, x='hour', y=['chat_intake_overall', 'chat_accepted_overall', 'chat_completed_overall', 'astros_live', 'users_live'], 
+fig4 = px.line(merged_overall, x='hour', y=['app_installs','profile_creation','chat_intake_overall', 'chat_accepted_overall', 'chat_completed_overall', 'astros_live', 'users_live'], 
                 title="Overall Metrics",
                 labels={
                     'app_installs' : 'App Installs',
