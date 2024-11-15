@@ -38,7 +38,7 @@ start_date_str = start_date.strftime('%Y-%m-%d') + ' 18:30:00'
 end_date_str = end_date.strftime('%Y-%m-%d') + ' 18:30:00'
 
 query = f"""
-SELECT user_id, device_id, other_data, event_time, event_name FROM `oneastro-prod.custom_event_tracking.events`
+SELECT user_id, device_id, other_data, event_time, event_name, app_id FROM `oneastro-prod.custom_event_tracking.events`
 WHERE (app_id = 'com.oneastro' OR app_id = 'com.oneastrologer')
 AND event_time >= DATETIME('{start_date_str}')
 AND event_time < DATETIME('{end_date_str}')
