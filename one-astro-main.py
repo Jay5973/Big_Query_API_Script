@@ -414,3 +414,4 @@ csv = merged_data.to_csv(index=False)
 st.download_button("Download Final Data as CSV", data=csv, file_name="combined_data_final_hour_wise.csv", mime="text/csv")
 
 time.sleep(10)
+st.rerun()
