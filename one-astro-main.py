@@ -354,9 +354,16 @@ def convert_to_int(value):
 # Apply the conversion function to each column (without transpose)
 last_row = last_row.apply(lambda col: col.map(convert_to_int))
 
+# Convert the last row to text format
+last_row_text = last_row.astype(str)
+
+# Transpose the row to display it vertically
+last_row_transposed = last_row_text.T
+
 # Display the last row in Streamlit (as a row, not transposed)
 st.write("Live Data")
-st.table(last_row)
+st.table(last_row_transposed)
+
 
 
 
