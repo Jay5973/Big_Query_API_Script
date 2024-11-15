@@ -602,6 +602,12 @@ st.dataframe(merged_overall)
 st.write('### Live Data')
 st.dataframe(fifteen_overall)
 
+import pandas as pd
+import streamlit as st
+
+# Assume 'fifteen_overall' is your DataFrame
+
+# Extract the last 4 rows
 last_rows = fifteen_overall.tail(4)
 
 # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
@@ -610,8 +616,12 @@ def convert_to_int(value):
         return int(value)
     return value
 
-# Apply the conversion function to each column (without transpose)
-last_rows = last_rows.apply(lambda col: col.map(convert_to_int))
+# Apply the conversion function to each column
+last_rows = last_rows.applymap(convert_to_int)
+
+# Drop the 'hour' and 'date' columns
+columns_to_drop = ['hour', 'date']
+last_rows = last_rows.drop(columns=columns_to_drop, errors='ignore')
 
 # Convert the last 4 rows to text format
 last_rows_text = last_rows.astype(str)
@@ -619,7 +629,7 @@ last_rows_text = last_rows.astype(str)
 # Transpose the rows to display them vertically
 last_rows_transposed = last_rows_text.T
 
-# Display the last 4 rows in Streamlit (as rows, not transposed)
+# Display the last 4 rows in Streamlit
 st.write("Live Data")
 st.table(last_rows_transposed)
 
