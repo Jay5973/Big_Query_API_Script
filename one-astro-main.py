@@ -62,6 +62,19 @@ combined_df
 
 astro_file = pd.read_csv("https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true")
 
+def get_15_minute_interval(hour, minute):
+    """
+    Given an hour and minute, return the corresponding 15-minute interval.
+    """
+    if 0 <= minute < 15:
+        return f"{hour}:00-15"
+    elif 15 <= minute < 30:
+        return f"{hour}:15-30"
+    elif 30 <= minute < 45:
+        return f"{hour}:30-45"
+    else:
+        return f"{hour}:45-60"
+
 
     # Step 3: Process Events to Calculate Unique Users
 class UniqueUsersProcessor:
@@ -319,19 +332,6 @@ class UniqueUsersProcessor:
         user_counts = intake_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
         user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
-    
-    def get_15_minute_interval(hour, minute):
-        """
-        Given an hour and minute, return the corresponding 15-minute interval.
-        """
-        if 0 <= minute < 15:
-            return f"{hour}:00-15"
-        elif 15 <= minute < 30:
-            return f"{hour}:15-30"
-        elif 30 <= minute < 45:
-            return f"{hour}:30-45"
-        else:
-            return f"{hour}:45-60"
     
     # Update the methods to group by 15-minute intervals
     
