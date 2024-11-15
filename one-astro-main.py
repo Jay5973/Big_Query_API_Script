@@ -336,6 +336,12 @@ import numpy as np
 
 # Assuming final_overall is your DataFrame
 # Get the last row of the DataFrame
+import streamlit as st
+import pandas as pd
+import numpy as np
+
+# Assuming final_overall is your DataFrame
+# Get the last row of the DataFrame
 last_row = final_overall.tail(1)
 
 # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
@@ -344,18 +350,13 @@ def convert_to_int(value):
         return int(value)
     return value
 
-last_row = last_row.applymap(convert_to_int)
+# Apply the conversion function to each column (without transpose)
+last_row = last_row.apply(lambda col: col.map(convert_to_int))
 
-# Manually transpose the DataFrame
-transposed_data = {
-    'Metric': last_row.columns,
-    'Value': last_row.iloc[0].values
-}
-transposed_df = pd.DataFrame(transposed_data)
-
-# Display the last row in Streamlit
+# Display the last row in Streamlit (as a row, not transposed)
 st.write("Live Data")
-st.table(transposed_df)
+st.table(last_row)
+
 
 
 
