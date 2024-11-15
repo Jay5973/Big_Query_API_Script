@@ -219,13 +219,17 @@ class UniqueUsersProcessor:
     #     return completed_counts
     
     def process_overall_chat_completed_events(self):
-        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_call_started']
-        valid_user_ids = intake_events['chatSessionId'].unique()
-        accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['chatSessionId'].isin(valid_user_ids))]
-        accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
-        accept_counts = accept_events.groupby(['date', 'hour'])['clientId'].nunique().reset_index()
+        # intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_msg_send']
+        # valid_user_ids = intake_events['chatSessionId'].unique()
+        # accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['chatSessionId'].isin(valid_user_ids))]
+        # accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        # accept_events['date'] = accept_events['event_time'].dt.date
+        # accept_events['hour'] = accept_events['event_time'].dt.hour
+        # accept_counts = accept_events.groupby(['date', 'hour'])['clientId'].nunique().reset_index()
+        # accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
+        # return accept_counts
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_call_accept']
+        accept_counts = accept_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
         accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
         return accept_counts
     
