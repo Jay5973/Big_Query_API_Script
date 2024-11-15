@@ -16,8 +16,8 @@ import time
 
 # Button to trigger rerun
 if st.button('Rerun App'):
-    # Triggering a rerun
-    st.experimental_rerun()
+    ctx = st.script_run_context()
+    ctx.rerun()
 
 # Example code that would change every time you rerun
 st.write(f"Current time: {time.ctime()}")
