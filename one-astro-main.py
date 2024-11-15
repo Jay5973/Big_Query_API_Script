@@ -331,13 +331,14 @@ merged_overall = final_overall
 
 import streamlit as st
 import pandas as pd
+import numpy as np
 
 # Assuming final_overall is your DataFrame
 # Get the last row of the DataFrame
 last_row1 = final_overall.tail(1)
 
 # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
-last_row1 = last_row1.apply(lambda col: col.map(lambda x: int(x) if isinstance(x, (int, float)) else x))
+last_row1 = last_row1.apply(lambda col: col.map(lambda x: int(x) if pd.notnull(x) and isinstance(x, (int, float)) else x))
 
 # Transpose the DataFrame
 last_row = last_row1.transpose()
@@ -345,6 +346,7 @@ last_row = last_row1.transpose()
 # Display the last row in Streamlit
 st.write("Live Data")
 st.table(last_row)
+
 
 
 # Display final output
