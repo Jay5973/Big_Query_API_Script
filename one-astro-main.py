@@ -548,7 +548,7 @@ import numpy as np
 
 # Assuming final_overall is your DataFrame
 # Get the last row of the DataFrame
-last_row = final_overall.tail(1)
+last_rows = fifteen_overall.tail(4)
 
 # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
 def convert_to_int(value):
@@ -557,17 +557,18 @@ def convert_to_int(value):
     return value
 
 # Apply the conversion function to each column (without transpose)
-last_row = last_row.apply(lambda col: col.map(convert_to_int))
+last_rows = last_rows.apply(lambda col: col.map(convert_to_int))
 
-# Convert the last row to text format
-last_row_text = last_row.astype(str)
+# Convert the last 4 rows to text format
+last_rows_text = last_rows.astype(str)
 
-# Transpose the row to display it vertically
-last_row_transposed = last_row_text.T
+# Transpose the rows to display them vertically
+last_rows_transposed = last_rows_text.T
 
-# Display the last row in Streamlit (as a row, not transposed)
+# Display the last 4 rows in Streamlit (as rows, not transposed)
 st.write("Live Data")
-st.table(last_row_transposed)
+st.table(last_rows_transposed)
+
 
 
 
