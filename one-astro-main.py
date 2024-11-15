@@ -9,6 +9,15 @@ import json
 # Streamlit App Setup
 st.title("Astrology Chat Data Processor")
 
+# Set a 10-minute timer
+refresh_interval = 10 * 60  # 10 minutes in seconds
+
+# Wait for the specified time before refreshing the page
+time.sleep(refresh_interval)
+
+# Refresh the page
+st.experimental_rerun()
+
 # Create API client.
 credentials = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"]
