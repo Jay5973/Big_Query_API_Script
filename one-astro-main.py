@@ -366,8 +366,9 @@ class UniqueUsersProcessor:
     def process_overall_chat_intake_requests_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_intake_submit']
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+
         # Create a new column for 15-minute intervals
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
@@ -378,8 +379,8 @@ class UniqueUsersProcessor:
     def process_overall_profile_creation_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'profile_creation']
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
         # Create a new column for 15-minute intervals
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
@@ -390,8 +391,8 @@ class UniqueUsersProcessor:
     def process_overall_app_install_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'app_install']
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
         # Create a new column for 15-minute intervals
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
@@ -402,8 +403,8 @@ class UniqueUsersProcessor:
     def process_overall_wallet_recharge_users_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'razorpay_continue_success']
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
         # Create a new column for 15-minute intervals
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
@@ -414,8 +415,8 @@ class UniqueUsersProcessor:
     def process_overall_wallet_recharge_count_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'razorpay_continue_success']
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
         # Create a new column for 15-minute intervals
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
@@ -428,8 +429,8 @@ class UniqueUsersProcessor:
         intake_events = intake_events.drop_duplicates(subset='orderId')
         intake_events['amount'] = pd.to_numeric(intake_events['amount'], errors='coerce')
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
         # Create a new column for 15-minute intervals
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
@@ -440,8 +441,8 @@ class UniqueUsersProcessor:
     def astros_live_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'accept_chat']
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
         # Create a new column for 15-minute intervals
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
@@ -453,8 +454,8 @@ class UniqueUsersProcessor:
         intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
         intake_events = intake_events[(self.raw_df['app_id'] == 'com.oneastro')]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        accept_events['date'] = accept_events['event_time'].dt.date
-        accept_events['hour'] = accept_events['event_time'].dt.hour
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
         # Create a new column for 15-minute intervals
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
