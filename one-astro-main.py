@@ -212,7 +212,7 @@ class UniqueUsersProcessor:
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
-        user_counts = intake_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
+        user_counts = intake_events.groupby(['date', 'hour'])['device_id'].nunique().reset_index()
         user_counts.rename(columns={'device_id': 'app_installs'}, inplace=True)
         return user_counts
 
