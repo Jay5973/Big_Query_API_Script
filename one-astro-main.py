@@ -475,6 +475,41 @@ class UniqueUsersProcessor:
         user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
 
+    def overall_accept_time_15(self):
+        # Filter chat_intake_submit events
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_intake_submit')].copy()
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        # Filter accept_chat events
+        cancel_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat')].copy()
+        cancel_events['event_time'] = pd.to_datetime(cancel_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        cancel_events['date'] = cancel_events['event_time'].dt.date
+        cancel_events['hour'] = cancel_events['event_time'].dt.hour
+        cancel_events['interval'] = cancel_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        # Merge the intake and cancel events based only on waitingListId
+        merged_events = pd.merge(
+            intake_events, 
+            cancel_events, 
+            on='waitingListId',  # Merge only on waitingListId
+            suffixes=('_intake', '_cancel')
+        )
+        
+        # Calculate time difference between intake and cancellation
+        merged_events['time_diff'] = (merged_events['event_time_cancel'] - merged_events['event_time_intake']).dt.total_seconds() / 60.0
+        
+        # Group by date, hour, and interval of the intake event, and calculate average time difference
+        avg_time_diff = merged_events.groupby(['date_intake', 'hour_intake', 'interval_intake'])['time_diff'].mean().reset_index()
+        
+        # Rename columns for clarity
+        avg_time_diff.rename(columns={'date_intake': 'date', 'hour_intake': 'hour', 'interval_intake': 'interval', 'time_diff': 'accept_time'}, inplace=True)
+        
+        return avg_time_diff
+
+
 
 astro_df = pd.read_csv('https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true')
 
@@ -510,6 +545,7 @@ wallet_recharge_users_15 = processor.process_overall_wallet_recharge_users_15()
 wallet_recharge_count_15 = processor.process_overall_wallet_recharge_count_15()
 wallet_recharge_amount_15 = processor.process_overall_wallet_recharge_amount_15()
 astros_busy_15 = processor.astros_busy_15()
+accept_time_15 = processor.overall_accept_time_15()
 # accept_time_15 = processor.overall_accept_time()
 
 # Combine results
@@ -543,7 +579,7 @@ fifteen_overall = pd.merge(fifteen_overall, overall_chat_completed_15, on=['date
 fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_count_15, on=['date', 'hour', 'interval'], how='outer')
 fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_users_15, on=['date', 'hour', 'interval'], how='outer')
 fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_amount_15, on=['date', 'hour', 'interval'], how='outer')
-# fifteen_overall = pd.merge(fifteen_overall, accept_time_15, on = ['date', 'hour','interval'],how = 'outer')
+fifteen_overall = pd.merge(fifteen_overall, accept_time_15, on = ['date', 'hour','interval'],how = 'outer')
 
 # Merge with astro data and display final data
 merged_data = processor.merge_with_astro_data(final_results)
