@@ -161,7 +161,7 @@ class UniqueUsersProcessor:
         return accept_counts
     
     def process_chat_completed_events(self):
-        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_msg_send']
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_call_accept') ]
         valid_user_ids = intake_events['chatSessionId'].unique()
         accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['paid'] == 0) & (self.raw_df['chatSessionId'].isin(valid_user_ids))]
         accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
@@ -172,7 +172,7 @@ class UniqueUsersProcessor:
         return accept_counts
     
     def process_paid_chat_completed_events(self):
-        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_msg_send']
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_call_accept')& (self.raw_df['paid'] == 1)]
         valid_user_ids = intake_events['chatSessionId'].unique()
         accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['paid'] != 0) & (self.raw_df['chatSessionId'].isin(valid_user_ids))]
         accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
@@ -228,7 +228,7 @@ class UniqueUsersProcessor:
         # accept_counts = accept_events.groupby(['date', 'hour'])['clientId'].nunique().reset_index()
         # accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
         # return accept_counts
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_call_accept')]
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_call_accept') ]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
@@ -352,7 +352,7 @@ class UniqueUsersProcessor:
     # Update the methods to group by 15-minute intervals
     
     def process_overall_chat_completed_events_15(self):
-        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_msg_send']
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_call_accept']
         valid_user_ids = intake_events['chatSessionId'].unique()
         accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['chatSessionId'].isin(valid_user_ids))]
         accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
@@ -366,7 +366,7 @@ class UniqueUsersProcessor:
         return accept_counts
     
     def process_overall_chat_accepted_events_15(self):
-        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_intake_submit']
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_call_accept']
         valid_user_ids = intake_events['user_id'].unique()
         accept_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat') & (self.raw_df['paid'] == 0) & (self.raw_df['clientId'].isin(valid_user_ids))]
         accept_events['event_time'] = pd.to_datetime(accept_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
