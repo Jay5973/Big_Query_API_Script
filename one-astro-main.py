@@ -21,9 +21,12 @@ current_time = time.time()
 time_diff = current_time - st.session_state.last_refresh
 
 # If more than the specified interval has passed, trigger a rerun
-if time_diff > CACHE_REFRESH_INTERVAL:
-    st.session_state.last_refresh = current_time  # Update last refresh time
-    st.rerun()
+import streamlit as st
+from streamlit_js_eval import streamlit_js_eval
+
+if st.button("Reload page"):
+    st.session_state.last_refresh = current_time 
+    streamlit_js_eval(js_expressions="parent.window.location.reload()")
 
 
 # Create API client.
