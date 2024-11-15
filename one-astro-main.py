@@ -476,6 +476,17 @@ wallet_recharge_users = processor.process_overall_wallet_recharge_users()
 wallet_recharge_count = processor.process_overall_wallet_recharge_count()
 wallet_recharge_amount = processor.process_overall_wallet_recharge_amount()
 accept_time = processor.overall_accept_time()
+overall_chat_completed_15 = processor.process_overall_chat_completed_events()
+overall_chat_intakes_15 = processor.process_overall_chat_intake_requests()
+overall_chat_accepts_15 = processor.process_overall_chat_accepted_events()
+astro_live_15 = processor.astros_live()
+users_live_15 = processor.users_live()
+profile_creation_15 = processor.process_overall_profile_creation()
+app_installs_15 = processor.process_overall_app_install()
+wallet_recharge_users_15 = processor.process_overall_wallet_recharge_users()
+wallet_recharge_count_15 = processor.process_overall_wallet_recharge_count()
+wallet_recharge_amount_15 = processor.process_overall_wallet_recharge_amount()
+accept_time_15 = processor.overall_accept_time()
 
 # Combine results
 final_results = intake_data
