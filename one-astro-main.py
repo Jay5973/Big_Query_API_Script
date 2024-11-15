@@ -38,7 +38,7 @@ SELECT * FROM `oneastro-prod.custom_event_tracking.events`
 WHERE (app_id = 'com.oneastro' OR app_id = 'com.oneastrologer')
 AND event_time >= DATETIME('{start_date_str}')
 AND event_time < DATETIME('{end_date_str}')
-AND event_name IN ('app_install','profile_creation','chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_send', 'confirm_cancel_waiting_list')
+AND event_name IN ('profile_creation','chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_send', 'confirm_cancel_waiting_list')
 """
 
 rows = run_query(query)
