@@ -244,6 +244,9 @@ class UniqueUsersProcessor:
         # Remove duplicate records based on the same orderId
         intake_events = intake_events.drop_duplicates(subset='orderId')
         
+        # Ensure the amount column is numeric
+        intake_events['amount'] = pd.to_numeric(intake_events['amount'], errors='coerce')
+        
         # Convert event_time to datetime and adjust the timezone
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         
@@ -258,6 +261,7 @@ class UniqueUsersProcessor:
         user_counts.rename(columns={'amount': 'wallet_recharge_amount'}, inplace=True)
         
         return user_counts
+
 
 
     
