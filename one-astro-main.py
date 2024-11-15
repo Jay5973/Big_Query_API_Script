@@ -329,6 +329,12 @@ final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hou
 merged_data = processor.merge_with_astro_data(final_results)
 merged_overall = final_overall
 
+last_row = merged_overall.tail(1)
+
+# Display the last row in Streamlit
+st.write("Live Data")
+st.table(last_row)
+
 # Display final output
 st.write("### Astro-Hour Wise Data Data")
 st.dataframe(merged_data)
