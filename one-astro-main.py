@@ -229,6 +229,8 @@ class UniqueUsersProcessor:
         # accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
         # return accept_counts
         accept_events = self.raw_df[self.raw_df['event_name'] == 'chat_call_accept']
+        accept_events['date'] = accept_events['event_time'].dt.date
+        accept_events['hour'] = accept_events['event_time'].dt.hour
         accept_counts = accept_events.groupby(['date', 'hour'])['user_id'].nunique().reset_index()
         accept_counts.rename(columns={'clientId': 'chat_completed_overall'}, inplace=True)
         return accept_counts
