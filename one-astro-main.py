@@ -505,21 +505,19 @@ class UniqueUsersProcessor:
         return user_counts
 
     def users_live_1(self):
-        # Filter for events where event_name is 'open_page'
-        intake_events = self.raw_df[self.raw_df['event_name'].isin(['open_page'])]
-        
-        # Convert event_time to datetime and adjust timezone
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
+        intake_events = intake_events[(self.raw_df['app_id'] == 'com.oneastro')]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        
-        # Extract date, hour, and minute from event_time
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
         intake_events['minute'] = intake_events['event_time'].dt.minute
+        # Create a new column for 15-minute intervals
+        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
-        # Count unique user_ids (live users)
-        user_counts = intake_events['user_id'].nunique()  # This gives the total number of unique live users
-        
+        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
+
 
 
     def overall_accept_time_15(self):
