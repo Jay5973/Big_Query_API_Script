@@ -42,8 +42,9 @@ SELECT user_id, device_id, other_data, event_time, event_name, app_id FROM `onea
 WHERE (app_id = 'com.oneastro' OR app_id = 'com.oneastrologer')
 AND event_time >= DATETIME('{start_date_str}')
 AND event_time < DATETIME('{end_date_str}')
-AND event_name IN ('change_chat_status', 'change_call_status', 'change_multichat_status','chat_call_accept','app_install', 'profile_creation','chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_send', 'confirm_cancel_waiting_list', 'razorpay_continue_success')
 """
+# AND event_name IN ('change_chat_status', 'change_call_status', 'change_multichat_status','chat_call_accept','app_install', 'profile_creation','chat_intake_submit', 'accept_chat', 'open_page', 'chat_msg_send', 'confirm_cancel_waiting_list', 'razorpay_continue_success')
+# """
 
 rows = run_query(query)
 
