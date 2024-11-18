@@ -477,6 +477,19 @@ class UniqueUsersProcessor:
         user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
         user_counts.rename(columns={'user_id': 'astros_busy'}, inplace=True)
         return user_counts
+
+    def astros_busy_1(self):
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        intake_events['minute'] = intake_events['event_time'].dt.minute
+        # Create a new column for 15-minute intervals
+        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'astros_busy_live'}, inplace=True)
+        return user_counts
     
     def users_live_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
@@ -531,6 +544,18 @@ astro_df = pd.read_csv('https://github.com/Jay5973/North-Star-Metrix/blob/main/a
 
 # Step 4: Process Data
 processor = UniqueUsersProcessor(combined_df, astro_df)
+live_astros_busy = processor.astros_busy_1()
+
+from streamlit_card import card
+
+hasClicked = card(
+  title=live_astros_busy,
+  text="Some description"
+)
+
+
+
+
 
 # Process each event type
 intake_data = processor.process_chat_intake_requests()
