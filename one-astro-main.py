@@ -611,105 +611,144 @@ hasClicked = card(
 
 astros_live_1 = processor.astros_live_1()
 print(astros_live_1)
-astros_live_1_str = str(astros_live_1['astros_live_1'].tail(1).values[0])
-hasClicked = card(
-  title=astros_live_1_str,  # Now passing a string to the title
-  text="Astrologers Live Currently"
-)
+# astros_live_1_str = str(astros_live_1['astros_live_1'].tail(1).values[0])
+# hasClicked = card(
+#   title=astros_live_1_str,  # Now passing a string to the title
+#   text="Astrologers Live Currently"
+# )
 
 
-# Process each event type
-intake_data = processor.process_chat_intake_requests()
-accepted_data = processor.process_chat_accepted_events()
-completed_data = processor.process_chat_completed_events()
-paid_completed_data = processor.process_paid_chat_completed_events()
-cancelled = processor.process_chat_cancels()
-cancel_time = processor.cancellation_time()
-overall_chat_completed = processor.process_overall_chat_completed_events()
-overall_chat_intakes = processor.process_overall_chat_intake_requests()
-overall_chat_accepts = processor.process_overall_chat_accepted_events()
-astro_live = processor.astros_live()
-users_live = processor.users_live()
-profile_creation = processor.process_overall_profile_creation()
-app_installs = processor.process_overall_app_install()
-wallet_recharge_users = processor.process_overall_wallet_recharge_users()
-wallet_recharge_count = processor.process_overall_wallet_recharge_count()
-wallet_recharge_amount = processor.process_overall_wallet_recharge_amount()
-accept_time = processor.overall_accept_time()
-overall_chat_completed_15 = processor.process_overall_chat_completed_events_15()
-overall_chat_intakes_15 = processor.process_overall_chat_intake_requests_15()
-overall_chat_accepts_15 = processor.process_overall_chat_accepted_events_15()
-astro_live_15 = processor.astros_live_15()
-users_live_15 = processor.users_live_15()
-profile_creation_15 = processor.process_overall_profile_creation_15()
-app_installs_15 = processor.process_overall_app_install_15()
-wallet_recharge_users_15 = processor.process_overall_wallet_recharge_users_15()
-wallet_recharge_count_15 = processor.process_overall_wallet_recharge_count_15()
-wallet_recharge_amount_15 = processor.process_overall_wallet_recharge_amount_15()
-astros_busy_15 = processor.astros_busy_15()
-accept_time_15 = processor.overall_accept_time_15()
-astros_busy = processor.astros_busy()
+# # Process each event type
+# intake_data = processor.process_chat_intake_requests()
+# accepted_data = processor.process_chat_accepted_events()
+# completed_data = processor.process_chat_completed_events()
+# paid_completed_data = processor.process_paid_chat_completed_events()
+# cancelled = processor.process_chat_cancels()
+# cancel_time = processor.cancellation_time()
+# overall_chat_completed = processor.process_overall_chat_completed_events()
+# overall_chat_intakes = processor.process_overall_chat_intake_requests()
+# overall_chat_accepts = processor.process_overall_chat_accepted_events()
+# astro_live = processor.astros_live()
+# users_live = processor.users_live()
+# profile_creation = processor.process_overall_profile_creation()
+# app_installs = processor.process_overall_app_install()
+# wallet_recharge_users = processor.process_overall_wallet_recharge_users()
+# wallet_recharge_count = processor.process_overall_wallet_recharge_count()
+# wallet_recharge_amount = processor.process_overall_wallet_recharge_amount()
+# accept_time = processor.overall_accept_time()
+# overall_chat_completed_15 = processor.process_overall_chat_completed_events_15()
+# overall_chat_intakes_15 = processor.process_overall_chat_intake_requests_15()
+# overall_chat_accepts_15 = processor.process_overall_chat_accepted_events_15()
+# astro_live_15 = processor.astros_live_15()
+# users_live_15 = processor.users_live_15()
+# profile_creation_15 = processor.process_overall_profile_creation_15()
+# app_installs_15 = processor.process_overall_app_install_15()
+# wallet_recharge_users_15 = processor.process_overall_wallet_recharge_users_15()
+# wallet_recharge_count_15 = processor.process_overall_wallet_recharge_count_15()
+# wallet_recharge_amount_15 = processor.process_overall_wallet_recharge_amount_15()
+# astros_busy_15 = processor.astros_busy_15()
+# accept_time_15 = processor.overall_accept_time_15()
+# astros_busy = processor.astros_busy()
 
-# accept_time_15 = processor.overall_accept_time()
+# # accept_time_15 = processor.overall_accept_time()
 
-# Combine results
-final_results = intake_data
-final_results = pd.merge(final_results, accepted_data, on=['_id', 'date', 'hour'], how='outer')
-final_results = pd.merge(final_results, completed_data, on=['_id', 'date', 'hour'], how='outer')
-final_results = pd.merge(final_results, paid_completed_data, on=['_id', 'date', 'hour'], how='outer')
-final_results = pd.merge(final_results, cancelled, on=['_id', 'date', 'hour'], how='outer')
-final_results = pd.merge(final_results, cancel_time, on=['_id', 'date', 'hour'], how='outer')
+# # Combine results
+# final_results = intake_data
+# final_results = pd.merge(final_results, accepted_data, on=['_id', 'date', 'hour'], how='outer')
+# final_results = pd.merge(final_results, completed_data, on=['_id', 'date', 'hour'], how='outer')
+# final_results = pd.merge(final_results, paid_completed_data, on=['_id', 'date', 'hour'], how='outer')
+# final_results = pd.merge(final_results, cancelled, on=['_id', 'date', 'hour'], how='outer')
+# final_results = pd.merge(final_results, cancel_time, on=['_id', 'date', 'hour'], how='outer')
 
-final_overall = users_live
-final_overall = pd.merge(final_overall, astro_live, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, astros_busy, on = ['date','hour'],how = 'outer')
-final_overall = pd.merge(final_overall, app_installs, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, profile_creation, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, overall_chat_intakes, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, overall_chat_accepts, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, overall_chat_completed, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, wallet_recharge_users, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, wallet_recharge_count, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hour'], how='outer')
-final_overall = pd.merge(final_overall, accept_time, on = ['date','hour'],how = 'outer')
-
-
-fifteen_overall = users_live_15
-fifteen_overall = pd.merge(fifteen_overall, astro_live_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, astros_busy_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, app_installs_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, profile_creation_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, overall_chat_intakes_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, overall_chat_accepts_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, overall_chat_completed_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_count_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_users_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_amount_15, on=['date', 'hour', 'interval'], how='outer')
-fifteen_overall = pd.merge(fifteen_overall, accept_time_15, on = ['date', 'hour','interval'],how = 'outer')
-
-# Merge with astro data and display final data
-merged_data = processor.merge_with_astro_data(final_results)
-merged_overall = final_overall
+# final_overall = users_live
+# final_overall = pd.merge(final_overall, astro_live, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, astros_busy, on = ['date','hour'],how = 'outer')
+# final_overall = pd.merge(final_overall, app_installs, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, profile_creation, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, overall_chat_intakes, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, overall_chat_accepts, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, overall_chat_completed, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, wallet_recharge_users, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, wallet_recharge_count, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, wallet_recharge_amount, on=['date', 'hour'], how='outer')
+# final_overall = pd.merge(final_overall, accept_time, on = ['date','hour'],how = 'outer')
 
 
-# import streamlit as st
+# fifteen_overall = users_live_15
+# fifteen_overall = pd.merge(fifteen_overall, astro_live_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, astros_busy_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, app_installs_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, profile_creation_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, overall_chat_intakes_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, overall_chat_accepts_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, overall_chat_completed_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_count_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_users_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, wallet_recharge_amount_15, on=['date', 'hour', 'interval'], how='outer')
+# fifteen_overall = pd.merge(fifteen_overall, accept_time_15, on = ['date', 'hour','interval'],how = 'outer')
+
+# # Merge with astro data and display final data
+# merged_data = processor.merge_with_astro_data(final_results)
+# merged_overall = final_overall
+
+
+# # import streamlit as st
+# # import pandas as pd
+# # import numpy as np
+
+# # # Assuming final_overall is your DataFrame
+# # # Get the last row of the DataFrame
+# # import pandas as pd
+# # import streamlit as st
+# # from datetime import datetime, timedelta
+
+# # # Assuming `final_overall` is already defined
+
+# # # Get the last 4 rows
+# # last_rows = final_overall.tail(4)
+
+# # # Drop the columns for date, hour, and interval
+# # # columns_to_drop = ['date', 'hour', 'interval']  # Adjust these column names based on your DataFrame
+# # # last_rows = last_rows.drop(columns=columns_to_drop)
+
+# # # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
+# # def convert_to_int(value):
+# #     if pd.notnull(value) and isinstance(value, (int, float)):
+# #         return int(value)
+# #     return value
+
+# # # Apply the conversion function to each column (without transpose)
+# # last_rows = last_rows.apply(lambda col: col.map(convert_to_int))
+
+# # # Define time range labels
+# # now = datetime.now()
+# # time_ranges = [
+# #     f"{(now - timedelta(hours=1, minutes=0)).strftime('%H:%M')} - {(now - timedelta(minutes=45)).strftime('%H:%M')}",
+# #     f"{(now - timedelta(minutes=45)).strftime('%H:%M')} - {(now - timedelta(minutes=30)).strftime('%H:%M')}",
+# #     f"{(now - timedelta(minutes=30)).strftime('%H:%M')} - {(now - timedelta(minutes=15)).strftime('%H:%M')}",
+# #     f"{(now - timedelta(minutes=15)).strftime('%H:%M')} - {now.strftime('%H:%M')}"
+# # ]
+
+# # # Replace the index with the time range labels
+# # last_rows.index = time_ranges
+
+# # # Convert the last 4 rows to text format
+# # last_rows_text = last_rows.astype(str)
+
+# # # Transpose the rows to display them vertically
+# # last_rows_transposed = last_rows_text.T
+
+# # # Display the last 4 rows in Streamlit (as rows, not transposed)
+# # st.write("Live Data")
+# # st.table(last_rows_transposed)
+
 # import pandas as pd
-# import numpy as np
-
-# # Assuming final_overall is your DataFrame
-# # Get the last row of the DataFrame
-# import pandas as pd
 # import streamlit as st
-# from datetime import datetime, timedelta
 
-# # Assuming `final_overall` is already defined
+# # Assume 'fifteen_overall' is your DataFrame
 
-# # Get the last 4 rows
-# last_rows = final_overall.tail(4)
-
-# # Drop the columns for date, hour, and interval
-# # columns_to_drop = ['date', 'hour', 'interval']  # Adjust these column names based on your DataFrame
-# # last_rows = last_rows.drop(columns=columns_to_drop)
+# # Extract the last 4 rows
+# last_rows = fifteen_overall.tail(4)
 
 # # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
 # def convert_to_int(value):
@@ -717,20 +756,12 @@ merged_overall = final_overall
 #         return int(value)
 #     return value
 
-# # Apply the conversion function to each column (without transpose)
-# last_rows = last_rows.apply(lambda col: col.map(convert_to_int))
+# # Apply the conversion function to each column
+# last_rows = last_rows.applymap(convert_to_int)
 
-# # Define time range labels
-# now = datetime.now()
-# time_ranges = [
-#     f"{(now - timedelta(hours=1, minutes=0)).strftime('%H:%M')} - {(now - timedelta(minutes=45)).strftime('%H:%M')}",
-#     f"{(now - timedelta(minutes=45)).strftime('%H:%M')} - {(now - timedelta(minutes=30)).strftime('%H:%M')}",
-#     f"{(now - timedelta(minutes=30)).strftime('%H:%M')} - {(now - timedelta(minutes=15)).strftime('%H:%M')}",
-#     f"{(now - timedelta(minutes=15)).strftime('%H:%M')} - {now.strftime('%H:%M')}"
-# ]
-
-# # Replace the index with the time range labels
-# last_rows.index = time_ranges
+# # Drop the 'hour' and 'date' columns
+# columns_to_drop = ['hour', 'date']
+# last_rows = last_rows.drop(columns=columns_to_drop, errors='ignore')
 
 # # Convert the last 4 rows to text format
 # last_rows_text = last_rows.astype(str)
@@ -738,114 +769,83 @@ merged_overall = final_overall
 # # Transpose the rows to display them vertically
 # last_rows_transposed = last_rows_text.T
 
-# # Display the last 4 rows in Streamlit (as rows, not transposed)
+# # Display the last 4 rows in Streamlit
 # st.write("Live Data")
 # st.table(last_rows_transposed)
 
-import pandas as pd
-import streamlit as st
+# merged_data_overall = merged_overall
 
-# Assume 'fifteen_overall' is your DataFrame
+# # Apply the conversion function to each column
+# merged_data_overall = merged_data_overall.applymap(convert_to_int)
 
-# Extract the last 4 rows
-last_rows = fifteen_overall.tail(4)
+# # Drop the 'hour' and 'date' columns
+# # columns_to_drop = ['hour', 'date']
+# # last_rows = last_rows.drop(columns=columns_to_drop, errors='ignore')
 
-# Convert all numerical values to integers, ensuring that date and datetime fields are preserved
-def convert_to_int(value):
-    if pd.notnull(value) and isinstance(value, (int, float)):
-        return int(value)
-    return value
+# # Convert the last 4 rows to text format
+# merged_overall_text = merged_data_overall.astype(str)
 
-# Apply the conversion function to each column
-last_rows = last_rows.applymap(convert_to_int)
-
-# Drop the 'hour' and 'date' columns
-columns_to_drop = ['hour', 'date']
-last_rows = last_rows.drop(columns=columns_to_drop, errors='ignore')
-
-# Convert the last 4 rows to text format
-last_rows_text = last_rows.astype(str)
-
-# Transpose the rows to display them vertically
-last_rows_transposed = last_rows_text.T
-
-# Display the last 4 rows in Streamlit
-st.write("Live Data")
-st.table(last_rows_transposed)
-
-merged_data_overall = merged_overall
-
-# Apply the conversion function to each column
-merged_data_overall = merged_data_overall.applymap(convert_to_int)
-
-# Drop the 'hour' and 'date' columns
-# columns_to_drop = ['hour', 'date']
-# last_rows = last_rows.drop(columns=columns_to_drop, errors='ignore')
-
-# Convert the last 4 rows to text format
-merged_overall_text = merged_data_overall.astype(str)
-
-# Transpose the rows to display them vertically
-merged_overall_transpose = merged_overall_text.T
+# # Transpose the rows to display them vertically
+# merged_overall_transpose = merged_overall_text.T
 
 
-st.write('### Overall-Hour Wise Data')
-st.dataframe(merged_overall_transpose)
+# st.write('### Overall-Hour Wise Data')
+# st.dataframe(merged_overall_transpose)
 
-# Display final output
-st.write("### Astro-Hour Wise Data Data")
-st.dataframe(merged_data)
+# # Display final output
+# st.write("### Astro-Hour Wise Data Data")
+# st.dataframe(merged_data)
 
 
-import plotly.express as px
+# import plotly.express as px
 
-fig4 = px.line(merged_overall, x='hour', y=['app_installs','profile_creation','chat_intake_overall', 'chat_accepted_overall', 'chat_completed_overall', 'astros_live', 'users_live', 'wallet_recharge_count'], 
-                title="Overall Metrics",
-                labels={
-                    'app_installs' : 'App Installs',
-                    'profile_creation' : 'Profile Creations',
-                    'chat_intake_overall': 'Chat Intakes',
-                    'chat_accepted_overall': 'Chat Accepts',
-                    'chat_completed_overall': 'Chat Completes',
-                    'astros_live': 'Astrologers Live',
-                    'users_live': 'Users Live',
-                    'wallet_recharge_amount' : 'Wallet Recharge Total in INR'
-                })
-fig4.update_layout(xaxis_title="Hour", yaxis_title="Count")
-fig4.update_traces(connectgaps=False)
-st.plotly_chart(fig4)
+# fig4 = px.line(merged_overall, x='hour', y=['app_installs','profile_creation','chat_intake_overall', 'chat_accepted_overall', 'chat_completed_overall', 'astros_live', 'users_live', 'wallet_recharge_count'], 
+#                 title="Overall Metrics",
+#                 labels={
+#                     'app_installs' : 'App Installs',
+#                     'profile_creation' : 'Profile Creations',
+#                     'chat_intake_overall': 'Chat Intakes',
+#                     'chat_accepted_overall': 'Chat Accepts',
+#                     'chat_completed_overall': 'Chat Completes',
+#                     'astros_live': 'Astrologers Live',
+#                     'users_live': 'Users Live',
+#                     'wallet_recharge_amount' : 'Wallet Recharge Total in INR'
+#                 })
+# fig4.update_layout(xaxis_title="Hour", yaxis_title="Count")
+# fig4.update_traces(connectgaps=False)
+# st.plotly_chart(fig4)
 
-# st.write('### Live Data')
-# st.dataframe(fifteen_overall)
+# # st.write('### Live Data')
+# # st.dataframe(fifteen_overall)
 
 
 
-# Plot the graph for Chat Intake Requests - Hour-wise and Astrologer-wise
-fig1 = px.line(merged_data, x='hour', y='chat_intake_requests', color='name', line_group='name', title="Chat Intake Requests Hour-wise Astrologer-wise")
-fig1.update_layout(xaxis_title="Hour", yaxis_title="Chat Intake Requests")
-fig1.update_traces(connectgaps=False)
-st.plotly_chart(fig1)
+# # Plot the graph for Chat Intake Requests - Hour-wise and Astrologer-wise
+# fig1 = px.line(merged_data, x='hour', y='chat_intake_requests', color='name', line_group='name', title="Chat Intake Requests Hour-wise Astrologer-wise")
+# fig1.update_layout(xaxis_title="Hour", yaxis_title="Chat Intake Requests")
+# fig1.update_traces(connectgaps=False)
+# st.plotly_chart(fig1)
 
-# Plot the graph for Chat Accept - Hour-wise and Astrologer-wise
-fig2 = px.line(merged_data, x='hour', y='chat_accepted', color='name', line_group='name', title="Chat Accept Hour-wise Astrologer-wise")
-fig2.update_layout(xaxis_title="Hour", yaxis_title="Chat Accepted")
-fig2.update_traces(connectgaps=False)
-st.plotly_chart(fig2)
+# # Plot the graph for Chat Accept - Hour-wise and Astrologer-wise
+# fig2 = px.line(merged_data, x='hour', y='chat_accepted', color='name', line_group='name', title="Chat Accept Hour-wise Astrologer-wise")
+# fig2.update_layout(xaxis_title="Hour", yaxis_title="Chat Accepted")
+# fig2.update_traces(connectgaps=False)
+# st.plotly_chart(fig2)
 
-# Plot the graph for Chat Completed - Hour-wise and Astrologer-wise
-fig3 = px.line(merged_data, x='hour', y='chat_completed', color='name', line_group='name', title="Chat Completed Hour-wise Astrologer-wise")
-fig3.update_layout(xaxis_title="Hour", yaxis_title="Chat Completed")
-fig3.update_traces(connectgaps=False)
-st.plotly_chart(fig3)
+# # Plot the graph for Chat Completed - Hour-wise and Astrologer-wise
+# fig3 = px.line(merged_data, x='hour', y='chat_completed', color='name', line_group='name', title="Chat Completed Hour-wise Astrologer-wise")
+# fig3.update_layout(xaxis_title="Hour", yaxis_title="Chat Completed")
+# fig3.update_traces(connectgaps=False)
+# st.plotly_chart(fig3)
 
-print(merged_overall.columns)
+# print(merged_overall.columns)
 
-# Plot the graph for Overall Metrics
+# # Plot the graph for Overall Metrics
 
 
-# Option to download final data
-csv = merged_data.to_csv(index=False)
-st.download_button("Download Final Data as CSV", data=csv, file_name="combined_data_final_hour_wise.csv", mime="text/csv")
+# # Option to download final data
+# csv = merged_data.to_csv(index=False)
+# st.download_button("Download Final Data as CSV", data=csv, file_name="combined_data_final_hour_wise.csv", mime="text/csv")
 
-time.sleep(900)
-st.rerun()
+# time.sleep(900)
+# st.rerun()
