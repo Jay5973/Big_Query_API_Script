@@ -550,8 +550,8 @@ live_astros_busy = processor.astros_busy_1()
 
 from streamlit_card import card
 
-# Convert live_astros_busy to a string if it's not already
-live_astros_busy_str = str(live_astros_busy.tail(1))
+# Get the last value of the 'astros_busy_live' column
+live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0])
 
 hasClicked = card(
   title=live_astros_busy_str,  # Now passing a string to the title
