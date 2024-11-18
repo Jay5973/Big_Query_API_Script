@@ -506,7 +506,7 @@ class UniqueUsersProcessor:
 
     def users_live_1(self):
         # Filter for events where event_name is 'open_page'
-        intake_events = self.raw_df[self.raw_df['event_name'].isin(['open_page', 'chat_intake_submit','chat_call_accept'])]
+        intake_events = self.raw_df[self.raw_df['event_name'].isin(['open_page'])]
         
         # Convert event_time to datetime and adjust timezone
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
