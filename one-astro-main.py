@@ -568,7 +568,8 @@ class UniqueUsersProcessor:
         latest_status_events = status_events.drop_duplicates(subset=['user_id'], keep='first')
         
         # Step 3: Check if the latest event for each user has the required conditions for being live
-        latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') & (latest_status_events['isSilent'] == False)
+        latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') 
+        # & (latest_status_events['isSilent'] == False)
         
         # Step 4: Filter users based on the live condition
         live_astros = latest_status_events[latest_status_events['is_live']]
