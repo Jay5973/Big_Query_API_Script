@@ -528,9 +528,9 @@ class UniqueUsersProcessor:
         return avg_time_diff
     
     def astros_busy_last_2_minutes(self):
-        # Get the current time and subtract 2 minutes for the last 2 minutes
-        current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
-        start_time = current_time - timedelta(minutes=2)
+        # Get the current UTC time and subtract 2 minutes for the last 2 minutes
+        current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)  # Current time in IST
+        start_time = current_time - timedelta(minutes=2)  # Time 2 minutes ago
         
         # Filter the intake events for 'chat_msg_send' event type, app_id, and last 2 minutes
         intake_events = self.raw_df[
