@@ -551,7 +551,7 @@ class UniqueUsersProcessor:
         avg_time_diff.rename(columns={'date_intake': 'date', 'hour_intake': 'hour', 'interval_intake': 'interval', 'time_diff': 'accept_time'}, inplace=True)
         
         return avg_time_diff
-
+    
     def astros_live_1(self):
         # Step 1: Sort the events by user_id and event_time (latest first)
         status_events = self.raw_df[
@@ -571,19 +571,11 @@ class UniqueUsersProcessor:
         latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') 
         # & (latest_status_events['isSilent'] == False)
         
-        # Step 4: Filter users based on the live condition
-        live_astros = latest_status_events[latest_status_events['is_live']]
+        # Step 4: Count the number of active astrologers
+        active_astros_count = latest_status_events['is_live'].sum()  # This will give the total count of live astrologers
         
-        # Step 5: Extract date, hour, minute from event_time
-        live_astros['date'] = live_astros['event_time'].dt.date
-        live_astros['hour'] = live_astros['event_time'].dt.hour
-        live_astros['minute'] = live_astros['event_time'].dt.minute
-        
-        # Step 6: Group by date, hour, and minute to count active astrologers
-        active_astros = live_astros.groupby(['date', 'hour', 'minute'])['user_id'].nunique().reset_index()
-        active_astros.rename(columns = {'user_id': 'astros_live_1'}, inplace = True)
-        
-        return active_astros
+        return active_astros_count
+
 
 
 
@@ -619,7 +611,7 @@ hasClicked = card(
 
 astros_live_1 = processor.astros_live_1()
 print(astros_live_1)
-astros_live_1_str = str(astros_live_1['astros_live_1'].values[0])
+astros_live_1_str = str(astros_live_1)
 hasClicked = card(
   title=astros_live_1_str,  # Now passing a string to the title
   text="Astrologers Live Currently"
