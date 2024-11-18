@@ -5,8 +5,6 @@ from google.cloud import bigquery
 import datetime
 import json
 import time
-from streamlit_card import card
-from datetime import datetime, timedelta
 
 
 # Streamlit App Setup
@@ -526,20 +524,6 @@ class UniqueUsersProcessor:
         avg_time_diff.rename(columns={'date_intake': 'date', 'hour_intake': 'hour', 'interval_intake': 'interval', 'time_diff': 'accept_time'}, inplace=True)
         
         return avg_time_diff
-    
-    def astros_busy_last_2_minutes(self):
-        # Get the current UTC time and subtract 2 minutes for the last 2 minutes
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
-        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        intake_events['date'] = intake_events['event_time'].dt.date
-        intake_events['hour'] = intake_events['event_time'].dt.hour
-        intake_events['minute'] = intake_events['event_time'].dt.minute
-        # Create a new column for 15-minute intervals
-        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
-        
-        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
-        user_counts.rename(columns={'user_id': 'live_astros_busy'}, inplace=True)
-        return user_counts
 
 
 
@@ -579,11 +563,6 @@ wallet_recharge_amount_15 = processor.process_overall_wallet_recharge_amount_15(
 astros_busy_15 = processor.astros_busy_15()
 accept_time_15 = processor.overall_accept_time_15()
 astros_busy = processor.astros_busy()
-
-astros_busy_last_2_minute = processor.astros_busy_last_2_minutes()
-
-
-
 # accept_time_15 = processor.overall_accept_time()
 
 # Combine results
@@ -773,11 +752,6 @@ fig3.update_traces(connectgaps=False)
 st.plotly_chart(fig3)
 
 print(merged_overall.columns)
-
-hasClicked = card(
-  title=astros_busy_last_2_minute.tail(1),
-  text='Current Astrologers Busy',
-)
 
 # Plot the graph for Overall Metrics
 
