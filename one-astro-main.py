@@ -529,24 +529,16 @@ class UniqueUsersProcessor:
     
     def astros_busy_last_2_minutes(self):
         # Get the current UTC time and subtract 2 minutes for the last 2 minutes
-        current_time = today + timedelta(hours=5, minutes=30)  # Current time in IST
-        start_time = current_time - timedelta(minutes=2)  # Time 2 minutes ago
-        
-        # Filter the intake events for 'chat_msg_send' event type, app_id, and last 2 minutes
-        intake_events = self.raw_df[
-            (self.raw_df['event_name'] == 'chat_msg_send') & 
-            (self.raw_df['app_id'] == "com.oneastrologer") & 
-            (pd.to_datetime(self.raw_df['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30) >= start_time)
-        ]
-        
-        # Convert event_time to datetime and adjust timezone
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
+        intake_events['minute'] = intake_events['event_time'].dt.minute
+        # Create a new column for 15-minute intervals
+        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
-        # Count unique users for the last 2 minutes
-        user_counts = intake_events['user_id'].nunique()
-        
+        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'live_astros_busy'}, inplace=True)
         return user_counts
 
 
@@ -783,7 +775,7 @@ st.plotly_chart(fig3)
 print(merged_overall.columns)
 
 hasClicked = card(
-  title=astros_busy_last_2_minute,
+  title=astros_busy_last_2_minute.tail(1),
   text='Current Astrologers Busy',
 )
 
