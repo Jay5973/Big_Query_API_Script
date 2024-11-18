@@ -505,7 +505,8 @@ class UniqueUsersProcessor:
         return user_counts
 
     def users_live_1(self):
-        intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
+        intake_events = self.raw_df[]
+        # [self.raw_df['event_name'] == 'open_page']
         intake_events = intake_events[(self.raw_df['app_id'] == 'com.oneastro')]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
