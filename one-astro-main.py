@@ -551,7 +551,7 @@ live_astros_busy = processor.astros_busy_1()
 from streamlit_card import card
 
 # Convert live_astros_busy to a string if it's not already
-live_astros_busy_str = str(live_astros_busy)
+live_astros_busy_str = str(live_astros_busy.tail(1))
 
 hasClicked = card(
   title=live_astros_busy_str,  # Now passing a string to the title
