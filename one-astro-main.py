@@ -525,28 +525,28 @@ class UniqueUsersProcessor:
         avg_time_diff.rename(columns={'date_intake': 'date', 'hour_intake': 'hour', 'interval_intake': 'interval', 'time_diff': 'accept_time'}, inplace=True)
         
         return avg_time_diff
-
-def astros_busy_last_2_minutes(self):
-    # Get the current time and subtract 2 minutes for the last 2 minutes
-    current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
-    start_time = current_time - timedelta(minutes=2)
     
-    # Filter the intake events for 'chat_msg_send' event type, app_id, and last 2 minutes
-    intake_events = self.raw_df[
-        (self.raw_df['event_name'] == 'chat_msg_send') & 
-        (self.raw_df['app_id'] == "com.oneastrologer") & 
-        (pd.to_datetime(self.raw_df['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30) >= start_time)
-    ]
-    
-    # Convert event_time to datetime and adjust timezone
-    intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-    intake_events['date'] = intake_events['event_time'].dt.date
-    intake_events['hour'] = intake_events['event_time'].dt.hour
-    
-    # Count unique users for the last 2 minutes
-    user_counts = intake_events['user_id'].nunique()
-    
-    return user_counts
+    def astros_busy_last_2_minutes(self):
+        # Get the current time and subtract 2 minutes for the last 2 minutes
+        current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+        start_time = current_time - timedelta(minutes=2)
+        
+        # Filter the intake events for 'chat_msg_send' event type, app_id, and last 2 minutes
+        intake_events = self.raw_df[
+            (self.raw_df['event_name'] == 'chat_msg_send') & 
+            (self.raw_df['app_id'] == "com.oneastrologer") & 
+            (pd.to_datetime(self.raw_df['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30) >= start_time)
+        ]
+        
+        # Convert event_time to datetime and adjust timezone
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        
+        # Count unique users for the last 2 minutes
+        user_counts = intake_events['user_id'].nunique()
+        
+        return user_counts
 
 
 
