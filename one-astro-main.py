@@ -5,6 +5,7 @@ from google.cloud import bigquery
 import datetime
 import json
 import time
+from streamlit_card import card
 
 
 # Streamlit App Setup
@@ -752,6 +753,13 @@ fig3.update_traces(connectgaps=False)
 st.plotly_chart(fig3)
 
 print(merged_overall.columns)
+
+hasClicked = card(
+  title="Hello World!",
+  text="Some description",
+  image="http://placekitten.com/200/300",
+  url="https://github.com/gamcoh/st-card"
+)
 
 # Plot the graph for Overall Metrics
 
