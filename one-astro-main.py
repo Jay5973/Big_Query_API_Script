@@ -556,7 +556,7 @@ class UniqueUsersProcessor:
         # Filter for status-change events (change_chat_status, change_call_status, change_multichat_status)
         status_events = self.raw_df[(self.raw_df['event_name'].isin(['change_chat_status', 'change_call_status', 'change_multichat_status'])) & (self.raw_df['app_id'] == "com.oneastrologer")]
         
-        active_status_events = status_events[status_events['status'] == True]
+        active_status_events = status_events[(status_events['status'] == "ON") & (status_events['isSilent'] == "false")]
     
         # Convert event_time to datetime
         active_status_events['event_time'] = pd.to_datetime(active_status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
