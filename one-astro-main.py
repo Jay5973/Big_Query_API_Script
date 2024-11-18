@@ -552,28 +552,28 @@ class UniqueUsersProcessor:
         
         return avg_time_diff
 
-def astros_live_1(self):
-    # Filter for status-change events (change_chat_status, change_call_status, change_multichat_status)
-    status_events = self.raw_df[self.raw_df['event_name'].isin(['change_chat_status', 'change_call_status', 'change_multichat_status'])]
-    
-    # Filter for 'True' status
-    active_status_events = status_events[status_events['status'] == True]
-    
-    # Convert event_time to datetime
-    active_status_events['event_time'] = pd.to_datetime(active_status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-    
-    # Extract date, hour, minute from event_time
-    active_status_events['date'] = active_status_events['event_time'].dt.date
-    active_status_events['hour'] = active_status_events['event_time'].dt.hour
-    active_status_events['minute'] = active_status_events['event_time'].dt.minute
-    
-    # Find the last active event for each astrologer
-    last_active_events = active_status_events.groupby('astrologer_id')['event_time'].max().reset_index()
-    
-    # Group by date, hour, and minute to count active astrologers
-    active_astros = last_active_events.groupby(['date', 'hour', 'minute']).size().reset_index(name='astros_live_1')
-    
-    return active_astros
+    def astros_live_1(self):
+        # Filter for status-change events (change_chat_status, change_call_status, change_multichat_status)
+        status_events = self.raw_df[self.raw_df['event_name'].isin(['change_chat_status', 'change_call_status', 'change_multichat_status'])]
+        
+        # Filter for 'True' status
+        active_status_events = status_events[status_events['status'] == True]
+        
+        # Convert event_time to datetime
+        active_status_events['event_time'] = pd.to_datetime(active_status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Extract date, hour, minute from event_time
+        active_status_events['date'] = active_status_events['event_time'].dt.date
+        active_status_events['hour'] = active_status_events['event_time'].dt.hour
+        active_status_events['minute'] = active_status_events['event_time'].dt.minute
+        
+        # Find the last active event for each astrologer
+        last_active_events = active_status_events.groupby('astrologer_id')['event_time'].max().reset_index()
+        
+        # Group by date, hour, and minute to count active astrologers
+        active_astros = last_active_events.groupby(['date', 'hour', 'minute']).size().reset_index(name='astros_live_1')
+        
+        return active_astros
 
 
 
