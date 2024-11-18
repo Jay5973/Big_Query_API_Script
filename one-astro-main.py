@@ -519,6 +519,74 @@ class UniqueUsersProcessor:
         user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
 
+    def free_users_live_1(self):
+        # Filter intake events for the app
+        intake_events = self.raw_df[self.raw_df['app_id'] == 'com.oneastro']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Get current time and the last minute window
+        current_time = pd.to_datetime('now', utc=True) + pd.DateOffset(hours=5, minutes=30)
+        last_minute_start = current_time - pd.DateOffset(minutes=1)
+        
+        # Filter intake events for those within the last minute
+        recent_events = intake_events[intake_events['event_time'] >= last_minute_start]
+        
+        # Get unique users active in the last minute
+        active_users = recent_events['user_id'].unique()
+        
+        # Assuming you have a dataframe `chats_df` for chat data
+        # Find the last chat for each active user
+        last_chats = self.chats_df[self.chats_df['user_id'].isin(active_users)]
+        
+        # Get the last chat for each user (assuming chat data has a 'timestamp' or 'event_time' field)
+        last_chats = last_chats.sort_values('event_time', ascending=False).drop_duplicates('user_id', keep='first')
+        
+        # Create a new column to categorize users as free, paid, or new
+        last_chats['user_type'] = last_chats['paid'].apply(lambda x: 'paid' if x else 'free')
+        
+        # For users with no chat, mark them as new users
+        active_users_df = pd.DataFrame(active_users, columns=['user_id'])
+        active_users_df = active_users_df.merge(last_chats[['user_id', 'user_type']], on='user_id', how='left')
+        active_users_df['user_type'].fillna('new', inplace=True)
+        
+        # Map the user type to the users in the last minute
+        user_counts = recent_events.groupby(['date', 'hour', 'minute'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
+        
+        # Adding user type information
+        user_counts['user_type'] = user_counts['user_id'].map(active_users_df.set_index('user_id')['user_type'])
+        
+        return user_counts
+
+
+    def paid_users_live_1(self):
+        # intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
+        intake_events = self.raw_df[self.raw_df['app_id'] == 'com.oneastro']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        intake_events['minute'] = intake_events['event_time'].dt.minute
+        # Create a new column for 15-minute intervals
+        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
+        return user_counts
+
+    def new_users_live_1(self):
+        # intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
+        intake_events = self.raw_df[self.raw_df['app_id'] == 'com.oneastro']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        intake_events['minute'] = intake_events['event_time'].dt.minute
+        # Create a new column for 15-minute intervals
+        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
+        return user_counts
+
 
 
     def overall_accept_time_15(self):
@@ -590,35 +658,63 @@ astro_df = pd.read_csv('https://github.com/Jay5973/North-Star-Metrix/blob/main/a
 processor = UniqueUsersProcessor(combined_df, astro_df)
 
 
-live_astros_busy = processor.astros_busy_1()
-
+import streamlit as st
 from streamlit_card import card
 
-# Get the last value of the 'astros_busy_live' column
+# Get data for the cards
+live_astros_busy = processor.astros_busy_1()
 live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0])
 
-hasClicked = card(
-  title=live_astros_busy_str,  # Now passing a string to the title
-  text="Astrologers Busy Currently"
-)
-
 live_users_live = processor.users_live_1()
-
-# Get the last value of the 'astros_busy_live' column
 live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
 
-hasClicked = card(
-  title=live_users_live_str,  # Now passing a string to the title
-  text="Users Live Currently"
-)
-
 astros_live_1 = processor.astros_live_1()
-print(astros_live_1)
 astros_live_1_str = str(astros_live_1)
-hasClicked = card(
-  title=astros_live_1_str,  # Now passing a string to the title
-  text="Astrologers Live Currently"
-)
+
+# Create columns for alignment in one row
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    # Card 1: Astrologers Busy Currently
+    hasClicked = card(
+        title=live_astros_busy_str,
+        text="Astrologers Busy Currently",
+        styles={
+            "card": {
+                "width": "100%",
+                "border-radius": "15px",
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)"
+            }
+        }
+    )
+
+with col2:
+    # Card 2: Users Live Currently
+    hasClicked = card(
+        title=live_users_live_str,
+        text="Users Live Currently",
+        styles={
+            "card": {
+                "width": "100%",
+                "border-radius": "15px",
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)"
+            }
+        }
+    )
+
+with col3:
+    # Card 3: Astrologers Live Currently
+    hasClicked = card(
+        title=astros_live_1_str,
+        text="Astrologers Live Currently",
+        styles={
+            "card": {
+                "width": "100%",
+                "border-radius": "15px",
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)"
+            }
+        }
+    )
 
 
 # Process each event type
