@@ -573,7 +573,8 @@ class UniqueUsersProcessor:
         latest_active_events['minute'] = latest_active_events['event_time'].dt.minute
         
         # Group by date, hour, and minute to count active users
-        active_astros = latest_active_events.groupby(['date', 'hour', 'minute'])['user_id'].nunique().reset_index(name='astros_live_1')
+        active_astros = latest_active_events.groupby(['date', 'hour', 'minute'])['user_id'].nunique().reset_index()
+        active_astros.rename(columns = {'user_id' : 'astros_live_1'}, inplace = True)
         
         return active_astros
 
