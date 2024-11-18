@@ -526,6 +526,28 @@ class UniqueUsersProcessor:
         
         return avg_time_diff
 
+def astros_busy_last_2_minutes(self):
+    # Get the current time and subtract 2 minutes for the last 2 minutes
+    current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+    start_time = current_time - timedelta(minutes=2)
+    
+    # Filter the intake events for 'chat_msg_send' event type, app_id, and last 2 minutes
+    intake_events = self.raw_df[
+        (self.raw_df['event_name'] == 'chat_msg_send') & 
+        (self.raw_df['app_id'] == "com.oneastrologer") & 
+        (pd.to_datetime(self.raw_df['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30) >= start_time)
+    ]
+    
+    # Convert event_time to datetime and adjust timezone
+    intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+    intake_events['date'] = intake_events['event_time'].dt.date
+    intake_events['hour'] = intake_events['event_time'].dt.hour
+    
+    # Count unique users for the last 2 minutes
+    user_counts = intake_events['user_id'].nunique()
+    
+    return user_counts
+
 
 
 astro_df = pd.read_csv('https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true')
@@ -564,6 +586,11 @@ wallet_recharge_amount_15 = processor.process_overall_wallet_recharge_amount_15(
 astros_busy_15 = processor.astros_busy_15()
 accept_time_15 = processor.overall_accept_time_15()
 astros_busy = processor.astros_busy()
+
+astros_busy_last_2_minute = processor.astros_busy_last_2_minutes()
+
+
+
 # accept_time_15 = processor.overall_accept_time()
 
 # Combine results
@@ -755,8 +782,8 @@ st.plotly_chart(fig3)
 print(merged_overall.columns)
 
 hasClicked = card(
-  title="Hello World!",
-  text="Some description",
+  title=astros_busy_last_2_minute,
+  text='Current Astrologers Busy',
 )
 
 # Plot the graph for Overall Metrics
