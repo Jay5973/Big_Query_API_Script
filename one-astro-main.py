@@ -613,7 +613,7 @@ astros_live_1 = processor.astros_live_1()
 print(astros_live_1)
 astros_live_1_str = str(astros_live_1['astros_live_1'].tail(1).values[0])
 hasClicked = card(
-  title=astros_live_1,  # Now passing a string to the title
+  title=astros_live_1_str,  # Now passing a string to the title
   text="Astrologers Live Currently"
 )
 
