@@ -553,30 +553,37 @@ class UniqueUsersProcessor:
         return avg_time_diff
 
     def astros_live_1(self):
-        # Filter for status-change events (change_chat_status, change_call_status, change_multichat_status)
-        status_events = self.raw_df[(self.raw_df['event_name'].isin(['change_chat_status', 'change_call_status', 'change_multichat_status'])) & (self.raw_df['app_id'] == "com.oneastrologer")]
+        # Step 1: Sort the events by user_id and event_time (latest first)
+        status_events = self.raw_df[
+            self.raw_df['event_name'].isin(['change_chat_status', 'change_call_status', 'change_multichat_status']) & 
+            (self.raw_df['app_id'] == "com.oneastrologer")
+        ]
         
-        active_status_events = status_events[(status_events['status'] == "ON") & (status_events['isSilent'] == False)]
-    
-        # Convert event_time to datetime
-        active_status_events['event_time'] = pd.to_datetime(active_status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        status_events['event_time'] = pd.to_datetime(status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         
         # Sort by user_id and event_time (latest first)
-        active_status_events = active_status_events.sort_values(by=['user_id', 'event_time'], ascending=[True, False])
+        status_events = status_events.sort_values(by=['user_id', 'event_time'], ascending=[True, False])
         
-        # Drop duplicates, keeping the latest event for each user
-        latest_active_events = active_status_events.drop_duplicates(subset=['user_id'], keep='first')
+        # Step 2: Drop duplicates and keep the most recent event for each user
+        latest_status_events = status_events.drop_duplicates(subset=['user_id'], keep='first')
         
-        # Extract date, hour, minute from event_time
-        latest_active_events['date'] = latest_active_events['event_time'].dt.date
-        latest_active_events['hour'] = latest_active_events['event_time'].dt.hour
-        latest_active_events['minute'] = latest_active_events['event_time'].dt.minute
+        # Step 3: Check if the latest event for each user has the required conditions for being live
+        latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') & (latest_status_events['isSilent'] == False)
         
-        # Group by date, hour, and minute to count active users
-        active_astros = latest_active_events.groupby(['date', 'hour', 'minute'])['user_id'].nunique().reset_index()
-        active_astros.rename(columns = {'user_id' : 'astros_live_1'}, inplace = True)
+        # Step 4: Filter users based on the live condition
+        live_astros = latest_status_events[latest_status_events['is_live']]
+        
+        # Step 5: Extract date, hour, minute from event_time
+        live_astros['date'] = live_astros['event_time'].dt.date
+        live_astros['hour'] = live_astros['event_time'].dt.hour
+        live_astros['minute'] = live_astros['event_time'].dt.minute
+        
+        # Step 6: Group by date, hour, and minute to count active astrologers
+        active_astros = live_astros.groupby(['date', 'hour', 'minute'])['user_id'].nunique().reset_index()
+        active_astros.rename(columns = {'user_id': 'astros_live_1'}, inplace = True)
         
         return active_astros
+
 
 
 
