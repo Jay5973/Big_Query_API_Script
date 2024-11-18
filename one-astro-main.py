@@ -542,6 +542,10 @@ class UniqueUsersProcessor:
 
 astro_df = pd.read_csv('https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true')
 
+# Step 4: Process Data
+processor = UniqueUsersProcessor(combined_df, astro_df)
+
+
 live_astros_busy = processor.astros_busy_1()
 
 from streamlit_card import card
@@ -553,6 +557,7 @@ hasClicked = card(
   title=live_astros_busy_str,  # Now passing a string to the title
   text="Some description"
 )
+
 
 
 
