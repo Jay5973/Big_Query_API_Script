@@ -671,8 +671,8 @@ live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
 astros_live_1 = processor.astros_live_1()
 astros_live_1_str = str(astros_live_1)
 
-# Create columns for alignment in one row
-col1, col2, col3 = st.columns(3)
+# Create columns for alignment in one row with reduced space
+col1, col2, col3 = st.columns([1, 1, 1])  # Equal column width, you can adjust these values as needed
 
 with col1:
     # Card 1: Astrologers Busy Currently
