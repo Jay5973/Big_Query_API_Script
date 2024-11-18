@@ -671,8 +671,8 @@ live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
 astros_live_1 = processor.astros_live_1()
 astros_live_1_str = str(astros_live_1)
 
-# Create columns for alignment in one row with reduced space
-col1, col2, col3 = st.columns([1, 1, 1])  # Equal column width, you can adjust these values as needed
+# Create columns for alignment in one row with reduced gap by using fractional width
+col1, col2, col3 = st.columns([1, 1, 1])  # Equal width for columns (adjust proportions as needed)
 
 with col1:
     # Card 1: Astrologers Busy Currently
@@ -681,9 +681,10 @@ with col1:
         text="Astrologers Busy Currently",
         styles={
             "card": {
-                "width": "100%",
+                "width": "100%",  # Ensure the card fills the column
                 "border-radius": "15px",
-                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)"
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)",
+                "margin": "0"  # Remove extra margin between cards
             }
         }
     )
@@ -695,9 +696,10 @@ with col2:
         text="Users Live Currently",
         styles={
             "card": {
-                "width": "100%",
+                "width": "100%",  # Ensure the card fills the column
                 "border-radius": "15px",
-                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)"
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)",
+                "margin": "0"  # Remove extra margin between cards
             }
         }
     )
@@ -709,9 +711,10 @@ with col3:
         text="Astrologers Live Currently",
         styles={
             "card": {
-                "width": "100%",
+                "width": "100%",  # Ensure the card fills the column
                 "border-radius": "15px",
-                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)"
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)",
+                "margin": "0"  # Remove extra margin between cards
             }
         }
     )
