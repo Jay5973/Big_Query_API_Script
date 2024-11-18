@@ -515,7 +515,7 @@ class UniqueUsersProcessor:
         # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
         
         user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
-        user_counts.rename(columns={'user_id': 'users_live_live'}, inplace=True)
+        user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
 
     def overall_accept_time_15(self):
@@ -601,7 +601,7 @@ hasClicked = card(
 live_users_live = processor.users_live_1()
 
 # Get the last value of the 'astros_busy_live' column
-live_users_live_str = str(live_users_live['users_live_live'].tail(1).values[0])
+live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
 
 hasClicked = card(
   title=live_users_live_str,  # Now passing a string to the title
@@ -609,7 +609,7 @@ hasClicked = card(
 )
 
 astros_live_1 = processor.astros_live_1()
-astros_live_1_str = str(live_users_live['astros_live_1'].tail(1).values[0])
+astros_live_1_str = str(astros_live_1['astros_live_1'].tail(1).values[0])
 hasClicked = card(
   title=astros_live_1,  # Now passing a string to the title
   text="Astrologers Live Currently"
