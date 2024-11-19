@@ -5,7 +5,7 @@ from google.cloud import bigquery
 import datetime
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 # Streamlit App Setup
