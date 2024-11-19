@@ -730,7 +730,7 @@ from streamlit_card import card
 
 # Get data for the cards
 live_astros_busy = processor.astros_busy_1()
-live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0]) + 
+live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0])
 
 live_users_live = processor.users_live_1()
 live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
