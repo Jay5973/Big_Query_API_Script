@@ -76,6 +76,36 @@ def get_15_minute_interval(hour, minute):
     else:
         return f"{hour}:45-60"
 
+def get_5_minute_interval(hour, minute):
+    """
+    Given an hour and minute, return the corresponding 5-minute interval.
+    """
+    if 0 <= minute < 5:
+        return f"{hour}:00-05"
+    elif 5 <= minute < 10:
+        return f"{hour}:05-10"
+    elif 10 <= minute < 15:
+        return f"{hour}:10-15"
+    elif 15 <= minute < 20:
+        return f"{hour}:15-20"
+    elif 20 <= minute < 25:
+        return f"{hour}:20-25"
+    elif 25 <= minute < 30:
+        return f"{hour}:25-30"
+    elif 30 <= minute < 35:
+        return f"{hour}:30-35"
+    elif 35 <= minute < 40:
+        return f"{hour}:35-40"
+    elif 40 <= minute < 45:
+        return f"{hour}:40-45"
+    elif 45 <= minute < 50:
+        return f"{hour}:45-50"
+    elif 50 <= minute < 55:
+        return f"{hour}:50-55"
+    else:
+        return f"{hour}:55-60"
+
+
 
     # Step 3: Process Events to Calculate Unique Users
 class UniqueUsersProcessor:
@@ -479,32 +509,6 @@ class UniqueUsersProcessor:
         user_counts.rename(columns={'user_id': 'astros_busy'}, inplace=True)
         return user_counts
 
-    def astros_busy_1(self):
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
-        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        intake_events['date'] = intake_events['event_time'].dt.date
-        intake_events['hour'] = intake_events['event_time'].dt.hour
-        intake_events['minute'] = intake_events['event_time'].dt.minute
-        # Create a new column for 15-minute intervals
-        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
-        
-        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
-        user_counts.rename(columns={'user_id': 'astros_busy_live'}, inplace=True)
-        return user_counts
-
-    def users_busy_1(self):
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastro")]
-        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        intake_events['date'] = intake_events['event_time'].dt.date
-        intake_events['hour'] = intake_events['event_time'].dt.hour
-        intake_events['minute'] = intake_events['event_time'].dt.minute
-        # Create a new column for 15-minute intervals
-        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
-        
-        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
-        user_counts.rename(columns={'user_id': 'users_busy_live'}, inplace=True)
-        return user_counts
-    
     def users_live_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
         intake_events = intake_events[(self.raw_df['app_id'] == 'com.oneastro')]
@@ -518,17 +522,76 @@ class UniqueUsersProcessor:
         user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
 
+    def overall_accept_time_15(self):
+        # Filter chat_intake_submit events
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_intake_submit')].copy()
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        # Filter accept_chat events
+        cancel_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat')].copy()
+        cancel_events['event_time'] = pd.to_datetime(cancel_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        cancel_events['date'] = cancel_events['event_time'].dt.date
+        cancel_events['hour'] = cancel_events['event_time'].dt.hour
+        cancel_events['interval'] = cancel_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        # Merge the intake and cancel events based only on waitingListId
+        merged_events = pd.merge(
+            intake_events, 
+            cancel_events, 
+            on='waitingListId',  # Merge only on waitingListId
+            suffixes=('_intake', '_cancel')
+        )
+        
+        # Calculate time difference between intake and cancellation
+        merged_events['time_diff'] = (merged_events['event_time_cancel'] - merged_events['event_time_intake']).dt.total_seconds() / 60.0
+        
+        # Group by date, hour, and interval of the intake event, and calculate average time difference
+        avg_time_diff = merged_events.groupby(['date_intake', 'hour_intake', 'interval_intake'])['time_diff'].mean().reset_index()
+        
+        # Rename columns for clarity
+        avg_time_diff.rename(columns={'date_intake': 'date', 'hour_intake': 'hour', 'interval_intake': 'interval', 'time_diff': 'accept_time'}, inplace=True)
+        
+        return avg_time_diff
+
+    def astros_busy_1(self):
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        # intake_events['minute'] = intake_events['event_time'].dt.minute
+        # Create a new column for 15-minute intervals
+        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'astros_busy_live'}, inplace=True)
+        return user_counts
+
+    def users_busy_1(self):
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastro")]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'users_busy_live'}, inplace=True)
+        return user_counts
+    
+
+
     def users_live_1(self):
         # intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
         intake_events = self.raw_df[self.raw_df['app_id'] == 'com.oneastro']
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
-        intake_events['minute'] = intake_events['event_time'].dt.minute
-        # Create a new column for 15-minute intervals
-        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
         
-        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
         user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
 
@@ -600,41 +663,6 @@ class UniqueUsersProcessor:
         user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
 
-
-
-    def overall_accept_time_15(self):
-        # Filter chat_intake_submit events
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_intake_submit')].copy()
-        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        intake_events['date'] = intake_events['event_time'].dt.date
-        intake_events['hour'] = intake_events['event_time'].dt.hour
-        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
-        
-        # Filter accept_chat events
-        cancel_events = self.raw_df[(self.raw_df['event_name'] == 'accept_chat')].copy()
-        cancel_events['event_time'] = pd.to_datetime(cancel_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        cancel_events['date'] = cancel_events['event_time'].dt.date
-        cancel_events['hour'] = cancel_events['event_time'].dt.hour
-        cancel_events['interval'] = cancel_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
-        
-        # Merge the intake and cancel events based only on waitingListId
-        merged_events = pd.merge(
-            intake_events, 
-            cancel_events, 
-            on='waitingListId',  # Merge only on waitingListId
-            suffixes=('_intake', '_cancel')
-        )
-        
-        # Calculate time difference between intake and cancellation
-        merged_events['time_diff'] = (merged_events['event_time_cancel'] - merged_events['event_time_intake']).dt.total_seconds() / 60.0
-        
-        # Group by date, hour, and interval of the intake event, and calculate average time difference
-        avg_time_diff = merged_events.groupby(['date_intake', 'hour_intake', 'interval_intake'])['time_diff'].mean().reset_index()
-        
-        # Rename columns for clarity
-        avg_time_diff.rename(columns={'date_intake': 'date', 'hour_intake': 'hour', 'interval_intake': 'interval', 'time_diff': 'accept_time'}, inplace=True)
-        
-        return avg_time_diff
     
     def astros_live_1(self):
         # Step 1: Sort the events by user_id and event_time (latest first)
