@@ -113,6 +113,11 @@ class UniqueUsersProcessor:
         self.raw_df = raw_df
         self.astro_df = astro_df
 
+    def filter_last_5_minutes(self, df):
+        current_time = pd.to_datetime('now', utc=True)
+        last_5_min_start = current_time - pd.DateOffset(minutes=5)
+        return df[df['event_time'] >= last_5_min_start]
+
     def process_chat_intake_requests(self):
         intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_intake_submit')]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
@@ -556,43 +561,65 @@ class UniqueUsersProcessor:
         
         return avg_time_diff
 
-    def astros_busy_1(self):
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
-        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        intake_events['date'] = intake_events['event_time'].dt.date
-        intake_events['hour'] = intake_events['event_time'].dt.hour
-        # intake_events['minute'] = intake_events['event_time'].dt.minute
-        # Create a new column for 15-minute intervals
-        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
-        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
+    # def astros_busy_1(self):
+    #     intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
+    #     intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+    #     intake_events['date'] = intake_events['event_time'].dt.date
+    #     intake_events['hour'] = intake_events['event_time'].dt.hour
+    #     # intake_events['minute'] = intake_events['event_time'].dt.minute
+    #     # Create a new column for 15-minute intervals
+    #     # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+    #     intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
         
-        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
-        user_counts.rename(columns={'user_id': 'astros_busy_live'}, inplace=True)
-        return user_counts
+    #     user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+    #     user_counts.rename(columns={'user_id': 'astros_busy_live'}, inplace=True)
+    #     return user_counts
 
-    def users_busy_1(self):
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') ]
-        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        intake_events['date'] = intake_events['event_time'].dt.date
-        intake_events['hour'] = intake_events['event_time'].dt.hour
-        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
+    # def users_busy_1(self):
+    #     intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') ]
+    #     intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+    #     intake_events['date'] = intake_events['event_time'].dt.date
+    #     intake_events['hour'] = intake_events['event_time'].dt.hour
+    #     intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
         
-        user_counts = intake_events.groupby(['date','hour', 'interval'])['chatSessionId'].nunique().reset_index()
-        user_counts.rename(columns={'chatSessionId': 'users_busy_live'}, inplace=True)
-        return user_counts
+    #     user_counts = intake_events.groupby(['date','hour', 'interval'])['chatSessionId'].nunique().reset_index()
+    #     user_counts.rename(columns={'chatSessionId': 'users_busy_live'}, inplace=True)
+    #     return user_counts
     
 
 
+    # def users_live_1(self):
+    #     # intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
+    #     intake_events = self.raw_df[(self.raw_df['app_id'] == 'com.oneastro') | (self.raw_df['app_id'] == 'com.oneastrotelugu')]
+    #     intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+    #     intake_events['date'] = intake_events['event_time'].dt.date
+    #     intake_events['hour'] = intake_events['event_time'].dt.hour
+    #     intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
+    #     user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+    #     user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
+    #     return user_counts
+
+    def astros_busy_1(self):
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events = self.filter_last_5_minutes(intake_events)
+        astros_busy_count = intake_events['user_id'].nunique()
+        return astros_busy_count
+
+    def users_busy_1(self):
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_msg_send']
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events = self.filter_last_5_minutes(intake_events)
+        users_busy_count = intake_events['chatSessionId'].nunique()
+        return users_busy_count
+
     def users_live_1(self):
-        # intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
         intake_events = self.raw_df[(self.raw_df['app_id'] == 'com.oneastro') | (self.raw_df['app_id'] == 'com.oneastrotelugu')]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        intake_events['date'] = intake_events['event_time'].dt.date
-        intake_events['hour'] = intake_events['event_time'].dt.hour
-        intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
-        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
-        user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
-        return user_counts
+        intake_events = self.filter_last_5_minutes(intake_events)
+        users_live_count = intake_events['user_id'].nunique()
+        return users_live_count
+
 
     def free_users_live_1(self):
         # Filter intake events for the app
