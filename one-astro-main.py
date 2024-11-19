@@ -114,7 +114,7 @@ class UniqueUsersProcessor:
         self.astro_df = astro_df
 
     def filter_last_5_minutes(self, df):
-        current_time = pd.to_datetime('now', utc=True)
+        current_time = pd.to_datetime('now', utc=True) + timedelta(hours=5, minutes=30)
         last_5_min_start = current_time - pd.DateOffset(minutes=5)
         return df[df['event_time'] >= last_5_min_start]
 
