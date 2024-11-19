@@ -1,4 +1,4 @@
-import streamlit as st
+cdimport streamlit as st
 import pandas as pd
 from google.oauth2 import service_account
 from google.cloud import bigquery
@@ -852,7 +852,7 @@ import streamlit as st
 # Assume 'fifteen_overall' is your DataFrame
 
 # Extract the last 4 rows
-last_rows = fifteen_overall.tail(4)
+last_rows = fifteen_overall.sort_values(by='column_name', ascending=False)
 
 # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
 def convert_to_int(value):
