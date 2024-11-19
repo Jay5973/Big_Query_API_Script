@@ -889,13 +889,13 @@ merged_data_overall = merged_data_overall.applymap(convert_to_int)
 
 # Convert the last 4 rows to text format
 merged_overall_text = merged_data_overall.astype(str)
+merged_overall_text = merged_overall_text.sort_index(ascending = False)
 
 # Transpose the rows to display them vertically
 merged_overall_transpose = merged_overall_text.T
 
 pd.set_option('display.max_colwidth', 200)
 st.write('### Overall-Hour Wise Data')
-merged_overall_transpose = merged_overall_transpose.sort_index(ascending = False)
 st.dataframe(merged_overall_transpose, width=2000, height=400)
 
 # Display final output
