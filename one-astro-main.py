@@ -893,9 +893,9 @@ merged_overall_text = merged_data_overall.astype(str)
 # Transpose the rows to display them vertically
 merged_overall_transpose = merged_overall_text.T
 
-
+pd.set_option('display.max_colwidth', 200)
 st.write('### Overall-Hour Wise Data')
-st.dataframe(merged_overall_transpose, width=1000, height=400)
+st.dataframe(merged_overall_transpose, width=2000, height=400)
 
 # Display final output
 st.write("### Astro-Hour Wise Data Data")
