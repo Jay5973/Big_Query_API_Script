@@ -578,14 +578,14 @@ class UniqueUsersProcessor:
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
         
         user_counts = intake_events.groupby(['date','hour', 'interval'])['chatSessionId'].nunique().reset_index()
-        user_counts.rename(columns={'user_id': 'users_busy_live'}, inplace=True)
+        user_counts.rename(columns={'chatSessionId': 'users_busy_live'}, inplace=True)
         return user_counts
     
 
 
     def users_live_1(self):
         # intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
-        intake_events = self.raw_df[self.raw_df['app_id'] == 'com.oneastro']
+        intake_events = self.raw_df[(self.raw_df['app_id'] == 'com.oneastro') & (self.raw_df['app_id'] == 'com.oneastrotelugu')]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
