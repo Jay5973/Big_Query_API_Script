@@ -895,6 +895,7 @@ merged_overall_transpose = merged_overall_text.T
 
 pd.set_option('display.max_colwidth', 200)
 st.write('### Overall-Hour Wise Data')
+merged_overall_transpose.sort_index(ascending = False)
 st.dataframe(merged_overall_transpose, width=2000, height=400)
 
 # Display final output
