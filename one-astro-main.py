@@ -747,7 +747,7 @@ busy_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled() -
 busy_slots_str = str(busy_slots)
 
 # Create columns for alignment in one row with reduced gap by using fractional width
-col1, col2, col3, col4, col4 = st.columns([1, 1, 1, 1, 1])  # Equal width for columns (adjust proportions as needed)
+col1, col2, col3, col4, col4, col5 = st.columns([1, 1, 1, 1, 1])  # Equal width for columns (adjust proportions as needed)
 
 with col1:
     # Card 1: Astrologers Busy Currently
