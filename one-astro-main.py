@@ -649,6 +649,58 @@ class UniqueUsersProcessor:
         
         return active_astros_count
 
+    def multichat_enabled(self):
+        # Step 1: Sort the events by user_id and event_time (latest first)
+        status_events = self.raw_df[
+            self.raw_df['event_name'].isin(['change_multichat_status']) & 
+            (self.raw_df['app_id'] == "com.oneastrologer")
+        ]
+        
+        status_events['event_time'] = pd.to_datetime(status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Sort by user_id and event_time (latest first)
+        status_events = status_events.sort_values(by=['user_id', 'event_time'], ascending=[True, False])
+        
+        # Step 2: Drop duplicates and keep the most recent event for each user
+        latest_status_events = status_events.drop_duplicates(subset=['user_id'], keep='first')
+        
+        # Step 3: Check if the latest event for each user has the required conditions for being live
+        latest_status_events['isSilent'] = latest_status_events['isSilent'].fillna(0)
+        latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') & (latest_status_events['isSilent'] == 0)
+
+   
+        
+        # Step 4: Count the number of active astrologers
+        active_astros_count = latest_status_events['is_live'].sum()  # This will give the total count of live astrologers
+        
+        return active_astros_count
+
+    def chat_call_enabled(self):
+        # Step 1: Sort the events by user_id and event_time (latest first)
+        status_events = self.raw_df[
+            self.raw_df['event_name'].isin(['change_chat_status', 'change_call_status']) & 
+            (self.raw_df['app_id'] == "com.oneastrologer")
+        ]
+        
+        status_events['event_time'] = pd.to_datetime(status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Sort by user_id and event_time (latest first)
+        status_events = status_events.sort_values(by=['user_id', 'event_time'], ascending=[True, False])
+        
+        # Step 2: Drop duplicates and keep the most recent event for each user
+        latest_status_events = status_events.drop_duplicates(subset=['user_id'], keep='first')
+        
+        # Step 3: Check if the latest event for each user has the required conditions for being live
+        latest_status_events['isSilent'] = latest_status_events['isSilent'].fillna(0)
+        latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') & (latest_status_events['isSilent'] == 0)
+
+   
+        
+        # Step 4: Count the number of active astrologers
+        active_astros_count = latest_status_events['is_live'].sum()  # This will give the total count of live astrologers
+        
+        return active_astros_count
+
 
 
 
@@ -672,6 +724,12 @@ live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
 
 astros_live_1 = processor.astros_live_1()
 astros_live_1_str = str(astros_live_1)
+
+total_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled()
+total_slots_str = str(total_slots)
+
+busy_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled()
+busy_slots_str = str(busy_slots)
 
 # Create columns for alignment in one row with reduced gap by using fractional width
 col1, col2, col3 = st.columns([1, 1, 1])  # Equal width for columns (adjust proportions as needed)
@@ -711,6 +769,21 @@ with col3:
     hasClicked = card(
         title=astros_live_1_str,
         text="Astrologers Live Currently",
+        styles={
+            "card": {
+                "width": "100%",  # Ensure the card fills the column
+                "border-radius": "15px",
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)",
+                "margin": "0"  # Remove extra margin between cards
+            }
+        }
+    )
+
+with col4:
+    # Card 3: Astrologers Live Currently
+    hasClicked = card(
+        title=total_slots,
+        text="Total Astrologers Slots",
         styles={
             "card": {
                 "width": "100%",  # Ensure the card fills the column
