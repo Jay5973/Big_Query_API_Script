@@ -749,12 +749,12 @@ processor = UniqueUsersProcessor(combined_df, astro_df)
 import streamlit as st
 from streamlit_card import card
 
-# Get data for the cards
+# # Get data for the cards
 live_astros_busy = processor.astros_busy_1()
-live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0])
+# live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0])
 
 live_users_live = processor.users_live_1()
-live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
+# live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
 
 astros_live_1 = processor.astros_live_1()
 astros_live_1_str = str(astros_live_1)
@@ -763,8 +763,8 @@ total_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled()
 total_slots_str = str(total_slots)
 
 live_users_busy = processor.users_busy_1()
-live_users_busy_int = int(live_users_busy['users_busy_live'].tail(1).values[0])
-busy_slots = live_users_busy_int
+# live_users_busy_int = int(live_users_busy['users_busy_live'].tail(1).values[0])
+busy_slots = live_users_busy
 busy_slots_str = str(busy_slots)
 
 # Create columns for alignment in one row with reduced gap by using fractional width
@@ -773,7 +773,7 @@ col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])  # Equal width for co
 with col1:
     # Card 1: Astrologers Busy Currently
     hasClicked = card(
-        title=live_astros_busy_str,
+        title=live_astros_busy,
         text="Astrologers Busy Currently",
         styles={
             "card": {
@@ -788,7 +788,7 @@ with col1:
 with col2:
     # Card 2: Users Live Currently
     hasClicked = card(
-        title=live_users_live_str,
+        title=live_users_live,
         text="Users Live Currently",
         styles={
             "card": {
