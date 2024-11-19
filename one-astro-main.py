@@ -730,7 +730,7 @@ from streamlit_card import card
 
 # Get data for the cards
 live_astros_busy = processor.astros_busy_1()
-live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0])
+live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0]) + 
 
 live_users_live = processor.users_live_1()
 live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
@@ -743,7 +743,7 @@ total_slots_str = str(total_slots)
 
 live_users_busy = processor.users_busy_1()
 live_users_busy_int = int(live_users_busy['users_busy_live'].tail(1).values[0])
-busy_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled() - live_users_busy_int
+busy_slots = live_users_busy_int
 busy_slots_str = str(busy_slots)
 
 # Create columns for alignment in one row with reduced gap by using fractional width
