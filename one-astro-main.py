@@ -852,7 +852,7 @@ import streamlit as st
 # Assume 'fifteen_overall' is your DataFrame
 
 # Extract the last 4 rows
-last_rows = fifteen_overall.sort_values(by='column_name', ascending=False)
+last_rows = fifteen_overall
 
 # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
 def convert_to_int(value):
