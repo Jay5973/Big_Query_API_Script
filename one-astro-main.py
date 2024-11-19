@@ -600,12 +600,33 @@ class UniqueUsersProcessor:
     #     user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
     #     return user_counts
 
+    # def astros_busy_1(self):
+    #     intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
+    #     intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+    #     intake_events = self.filter_last_5_minutes(intake_events)
+    #     astros_busy_count = intake_events['user_id'].nunique()
+    #     return astros_busy_count
     def astros_busy_1(self):
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastrologer")]
+        intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_msg_send']
+        
+        # Convert event_time to datetime and adjust to IST
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        
+        # Filter events for the last 5 minutes
         intake_events = self.filter_last_5_minutes(intake_events)
-        astros_busy_count = intake_events['user_id'].nunique()
+        
+        # Separate events based on app_id and count unique ids accordingly
+        astros_busy_count = 0
+        
+        if not intake_events.empty:
+            astro_events = intake_events[intake_events['app_id'].isin(['com.oneastro', 'com.oneastrotelugu'])]
+            astros_busy_count += astro_events['astrologerId'].nunique()
+            
+            user_events = intake_events[intake_events['app_id'] == 'com.oneastrologer']
+            astros_busy_count += user_events['user_id'].nunique()
+        
         return astros_busy_count
+
 
     def users_busy_1(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'chat_msg_send']
