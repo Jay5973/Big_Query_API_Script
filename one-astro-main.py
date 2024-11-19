@@ -852,7 +852,8 @@ import streamlit as st
 # Assume 'fifteen_overall' is your DataFrame
 
 # Extract the last 4 rows
-last_rows = fifteen_overall
+last_rows = fifteen_overall.sort_values(by='column_name', ascending=False)
+pd.set_option('display.max_colwidth', 100)
 
 # Convert all numerical values to integers, ensuring that date and datetime fields are preserved
 def convert_to_int(value):
@@ -874,8 +875,8 @@ last_rows_text = last_rows.astype(str)
 last_rows_transposed = last_rows_text.T
 
 # Display the last 4 rows in Streamlit
-st.write("Live Data")
-st.table(last_rows_transposed)
+st.write("15 Minutes Data Overall")
+st.dataframe(last_rows_transposed, width=1000, height=400)
 
 merged_data_overall = merged_overall
 
