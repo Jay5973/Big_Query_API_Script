@@ -782,7 +782,7 @@ with col3:
 with col4:
     # Card 3: Astrologers Live Currently
     hasClicked = card(
-        title=total_slots,
+        title=total_slots_str,
         text="Total Astrologers Slots",
         styles={
             "card": {
