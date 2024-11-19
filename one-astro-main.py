@@ -895,7 +895,7 @@ merged_overall_transpose = merged_overall_text.T
 
 
 st.write('### Overall-Hour Wise Data')
-st.dataframe(merged_overall_transpose)
+st.dataframe(merged_overall_transpose, , width=1000, height=400)
 
 # Display final output
 st.write("### Astro-Hour Wise Data Data")
