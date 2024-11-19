@@ -727,7 +727,7 @@ live_astros_busy = processor.astros_busy_1()
 live_astros_busy_str = str(live_astros_busy['astros_busy_live'].tail(1).values[0])
 
 live_users_live = processor.users_live_1()
-live_users_live_str = str(live_users_live['users_live'].tail(1).values[0])
+live_users_live_str = str(live_users_live['users_live'].tail(2).values[0])
 
 astros_live_1 = processor.astros_live_1()
 astros_live_1_str = str(astros_live_1)
@@ -736,7 +736,7 @@ total_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled()
 total_slots_str = str(total_slots)
 
 live_users_busy = processor.users_busy_1()
-live_users_busy_int = int(live_users_busy['users_busy_live'].tail(1).values[0])
+live_users_busy_int = int(live_users_busy['users_busy_live'].tail(2).values[0])
 busy_slots = live_users_busy_int
 busy_slots_str = str(busy_slots)
 
