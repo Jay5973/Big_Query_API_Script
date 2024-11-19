@@ -18,7 +18,7 @@ credentials = service_account.Credentials.from_service_account_info(
 client = bigquery.Client(credentials=credentials)
 
 # Perform query. Uses st.cache_data to only rerun when the query changes or after 10 min.
-# @st.cache_data(ttl=600, show_spinner=True)
+@st.cache_data(ttl=300, show_spinner=True)
 def run_query(query):
     query_job = client.query(query)
     rows_raw = query_job.result()
