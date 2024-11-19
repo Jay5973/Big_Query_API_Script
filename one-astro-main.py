@@ -571,13 +571,13 @@ class UniqueUsersProcessor:
         return user_counts
 
     def users_busy_1(self):
-        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastro")]
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') ]
         intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
         
-        user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
+        user_counts = intake_events.groupby(['date','hour', 'interval'])['chatSessionId'].nunique().reset_index()
         user_counts.rename(columns={'user_id': 'users_busy_live'}, inplace=True)
         return user_counts
     
@@ -590,7 +590,6 @@ class UniqueUsersProcessor:
         intake_events['date'] = intake_events['event_time'].dt.date
         intake_events['hour'] = intake_events['event_time'].dt.hour
         intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_5_minute_interval(x.hour, x.minute))
-        
         user_counts = intake_events.groupby(['date','hour', 'interval'])['user_id'].nunique().reset_index()
         user_counts.rename(columns={'user_id': 'users_live'}, inplace=True)
         return user_counts
@@ -682,70 +681,37 @@ class UniqueUsersProcessor:
         # Step 3: Check if the latest event for each user has the required conditions for being live
         latest_status_events['isSilent'] = latest_status_events['isSilent'].fillna(0)
         latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') & (latest_status_events['isSilent'] == 0)
-
-   
-        
-        # Step 4: Count the number of active astrologers
-        active_astros_count = latest_status_events['is_live'].sum()  # This will give the total count of live astrologers
+        active_astros_count = latest_status_events['is_live'].sum()
         
         return active_astros_count
 
     def multichat_enabled(self):
-        # Step 1: Sort the events by user_id and event_time (latest first)
         status_events = self.raw_df[
             self.raw_df['event_name'].isin(['change_multichat_status']) & 
             (self.raw_df['app_id'] == "com.oneastrologer")
         ]
         
         status_events['event_time'] = pd.to_datetime(status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        
-        # Sort by user_id and event_time (latest first)
         status_events = status_events.sort_values(by=['user_id', 'event_time'], ascending=[True, False])
-        
-        # Step 2: Drop duplicates and keep the most recent event for each user
         latest_status_events = status_events.drop_duplicates(subset=['user_id'], keep='first')
-        
-        # Step 3: Check if the latest event for each user has the required conditions for being live
         latest_status_events['isSilent'] = latest_status_events['isSilent'].fillna(0)
         latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') & (latest_status_events['isSilent'] == 0)
-
-   
-        
-        # Step 4: Count the number of active astrologers
-        active_astros_count = latest_status_events['is_live'].sum()  # This will give the total count of live astrologers
-        
+        active_astros_count = latest_status_events['is_live'].sum()
         return active_astros_count
 
     def chat_call_enabled(self):
-        # Step 1: Sort the events by user_id and event_time (latest first)
         status_events = self.raw_df[
             self.raw_df['event_name'].isin(['change_chat_status', 'change_call_status']) & 
             (self.raw_df['app_id'] == "com.oneastrologer")
         ]
         
         status_events['event_time'] = pd.to_datetime(status_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
-        
-        # Sort by user_id and event_time (latest first)
         status_events = status_events.sort_values(by=['user_id', 'event_time'], ascending=[True, False])
-        
-        # Step 2: Drop duplicates and keep the most recent event for each user
         latest_status_events = status_events.drop_duplicates(subset=['user_id'], keep='first')
-        
-        # Step 3: Check if the latest event for each user has the required conditions for being live
         latest_status_events['isSilent'] = latest_status_events['isSilent'].fillna(0)
         latest_status_events['is_live'] = (latest_status_events['status'] == 'ON') & (latest_status_events['isSilent'] == 0)
-
-   
-        
-        # Step 4: Count the number of active astrologers
         active_astros_count = latest_status_events['is_live'].sum()  # This will give the total count of live astrologers
-        
         return active_astros_count
-
-
-
-
-
 
 astro_df = pd.read_csv('https://github.com/Jay5973/North-Star-Metrix/blob/main/astro_type.csv?raw=true')
 
