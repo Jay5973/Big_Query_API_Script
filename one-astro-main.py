@@ -491,6 +491,19 @@ class UniqueUsersProcessor:
         user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
         user_counts.rename(columns={'user_id': 'astros_busy_live'}, inplace=True)
         return user_counts
+
+    def users_busy_1(self):
+        intake_events = self.raw_df[(self.raw_df['event_name'] == 'chat_msg_send') & (self.raw_df['app_id'] == "com.oneastro")]
+        intake_events['event_time'] = pd.to_datetime(intake_events['event_time'], utc=True) + pd.DateOffset(hours=5, minutes=30)
+        intake_events['date'] = intake_events['event_time'].dt.date
+        intake_events['hour'] = intake_events['event_time'].dt.hour
+        intake_events['minute'] = intake_events['event_time'].dt.minute
+        # Create a new column for 15-minute intervals
+        # intake_events['interval'] = intake_events['event_time'].apply(lambda x: get_15_minute_interval(x.hour, x.minute))
+        
+        user_counts = intake_events.groupby(['date','hour', 'minute'])['user_id'].nunique().reset_index()
+        user_counts.rename(columns={'user_id': 'users_busy_live'}, inplace=True)
+        return user_counts
     
     def users_live_15(self):
         intake_events = self.raw_df[self.raw_df['event_name'] == 'open_page']
@@ -728,11 +741,11 @@ astros_live_1_str = str(astros_live_1)
 total_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled()
 total_slots_str = str(total_slots)
 
-busy_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled()
+busy_slots = processor.multichat_enabled() * 2 + processor.chat_call_enabled() - processor.users_busy_1()
 busy_slots_str = str(busy_slots)
 
 # Create columns for alignment in one row with reduced gap by using fractional width
-col1, col2, col3, col4 = st.columns([1, 1, 1, 1])  # Equal width for columns (adjust proportions as needed)
+col1, col2, col3, col4, col4 = st.columns([1, 1, 1, 1, 1])  # Equal width for columns (adjust proportions as needed)
 
 with col1:
     # Card 1: Astrologers Busy Currently
@@ -784,6 +797,21 @@ with col4:
     hasClicked = card(
         title=total_slots_str,
         text="Total Astrologers Slots",
+        styles={
+            "card": {
+                "width": "100%",  # Ensure the card fills the column
+                "border-radius": "15px",
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)",
+                "margin": "0"  # Remove extra margin between cards
+            }
+        }
+    )
+
+with col5:
+    # Card 3: Astrologers Live Currently
+    hasClicked = card(
+        title=busy_slots_str,
+        text="Current Busy Slots",
         styles={
             "card": {
                 "width": "100%",  # Ensure the card fills the column
