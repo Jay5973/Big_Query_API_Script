@@ -18,7 +18,7 @@ credentials = service_account.Credentials.from_service_account_info(
 client = bigquery.Client(credentials=credentials)
 
 # Perform query. Uses st.cache_data to only rerun when the query changes or after 10 min.
-@st.cache_data(ttl=300, show_spinner=True)
+@st.cache_data(ttl=60, show_spinner=True)
 def run_query(query):
     query_job = client.query(query)
     rows_raw = query_job.result()
@@ -792,7 +792,7 @@ busy_slots_str = str(busy_slots)
 # Create columns for alignment in one row with reduced gap by using fractional width
 col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])  # Equal width for columns (adjust proportions as needed)
 
-with col2:
+with col1:
     # Card 2: Users Live Currently
     hasClicked = card(
         title=live_users_live,
@@ -807,7 +807,7 @@ with col2:
         }
     )
 
-with col3:
+with col2:
     # Card 3: Astrologers Live Currently
     hasClicked = card(
         title=astros_live_1_str,
@@ -822,7 +822,7 @@ with col3:
         }
     )
 
-with col1:
+with col3:
     # Card 1: Astrologers Busy Currently
     hasClicked = card(
         title=live_astros_busy,
