@@ -792,26 +792,11 @@ busy_slots_str = str(busy_slots)
 # Create columns for alignment in one row with reduced gap by using fractional width
 col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])  # Equal width for columns (adjust proportions as needed)
 
-with col1:
-    # Card 1: Astrologers Busy Currently
-    hasClicked = card(
-        title=live_astros_busy,
-        text="Astrologers Busy Currently",
-        styles={
-            "card": {
-                "width": "100%",  # Ensure the card fills the column
-                "border-radius": "15px",
-                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)",
-                "margin": "0"  # Remove extra margin between cards
-            }
-        }
-    )
-
 with col2:
     # Card 2: Users Live Currently
     hasClicked = card(
         title=live_users_live,
-        text="Users Live Currently",
+        text="Users Live",
         styles={
             "card": {
                 "width": "100%",  # Ensure the card fills the column
@@ -826,7 +811,7 @@ with col3:
     # Card 3: Astrologers Live Currently
     hasClicked = card(
         title=astros_live_1_str,
-        text="Astrologers Live Currently",
+        text="Astrologers Live",
         styles={
             "card": {
                 "width": "100%",  # Ensure the card fills the column
@@ -837,11 +822,28 @@ with col3:
         }
     )
 
+with col1:
+    # Card 1: Astrologers Busy Currently
+    hasClicked = card(
+        title=live_astros_busy,
+        text="Astrologers Busy",
+        styles={
+            "card": {
+                "width": "100%",  # Ensure the card fills the column
+                "border-radius": "15px",
+                "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)",
+                "margin": "0"  # Remove extra margin between cards
+            }
+        }
+    )
+
+
+
 with col4:
     # Card 3: Astrologers Live Currently
     hasClicked = card(
         title=total_slots_str,
-        text="Total Astrologers Slots",
+        text="Astrologers Slots Available",
         styles={
             "card": {
                 "width": "100%",  # Ensure the card fills the column
@@ -856,7 +858,7 @@ with col5:
     # Card 3: Astrologers Live Currently
     hasClicked = card(
         title=busy_slots_str,
-        text="Current Busy Slots",
+        text="Astrologers Slots Busy",
         styles={
             "card": {
                 "width": "100%",  # Ensure the card fills the column
