@@ -789,6 +789,8 @@ live_users_busy = processor.users_busy_1()
 busy_slots = live_users_busy
 busy_slots_str = str(busy_slots)
 
+st.write("###Live Insights)
+
 # Create columns for alignment in one row with reduced gap by using fractional width
 col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])  # Equal width for columns (adjust proportions as needed)
 
