@@ -11,6 +11,7 @@ from datetime import timedelta
 # Streamlit App Setup
 st.title("Astrology Chat Data Processor")
 
+
 # Create API client.
 credentials = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"]
